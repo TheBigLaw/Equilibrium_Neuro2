@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Novo Laudo WAIS | Equilibrium</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/Correcao_testes/form.css" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="/logo2.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'" />
+        <div><div class="brand-name">Equilibrium</div><div class="brand-sub">Neuropsicologia</div></div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item" href="/"><span class="nav-icon">📊</span><span>Dashboard</span></a>
+        <a class="nav-item" href="/#pacientes"><span class="nav-icon">👤</span><span>Pacientes</span></a>
+        <a class="nav-item active" href="/Correcao_testes/"><span class="nav-icon">✏️</span><span>Correção de Testes</span></a>
+        <a class="nav-item" href="/#relatorios"><span class="nav-icon">📄</span><span>Relatórios</span></a>
+        <a class="nav-item" href="/#checklist"><span class="nav-icon">✅</span><span>Checklist</span></a>
+        <a class="nav-item" href="/#config"><span class="nav-icon">⚙️</span><span>Configurações</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info"><div class="user-avatar">A</div><div><div class="user-name">Admin</div><div class="user-role">Profissional</div></div></div>
+        <button class="btn-logout" onclick="doLogout()">Sair</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <div>
+          <p class="page-subtitle"><a href="/Correcao_testes/" class="breadcrumb">Correção</a> → <a href="/Correcao_testes/WAIS/" class="breadcrumb">WAIS-III</a> → Novo Laudo</p>
+          <h1 class="page-title">Novo Laudo — WAIS-III</h1>
+        </div>
+        <button class="btn-secondary" onclick="history.back()">← Voltar</button>
+      </div>
+
+      <!-- CARD 1: Dados do examinando -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <span class="form-card-num">1</span>
+          <div>
+            <div class="form-card-title">Dados do Examinando</div>
+            <div class="form-card-desc">Informações pessoais do avaliado</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="nome">Nome completo</label>
+            <input type="text" id="nome" placeholder="Nome do avaliado" />
+          </div>
+          <div class="field">
+            <label for="cpf">CPF</label>
+            <input type="text" id="cpf" placeholder="000.000.000-00" />
+          </div>
+          <div class="field">
+            <label for="dataNascimento">Data de nascimento</label>
+            <input type="date" id="dataNascimento" />
+          </div>
+          <div class="field">
+            <label for="dataAplicacao">Data de aplicação</label>
+            <input type="date" id="dataAplicacao" />
+          </div>
+          <div class="field">
+            <label for="sexo">Sexo</label>
+            <select id="sexo">
+              <option value="">Selecione</option>
+              <option>Masculino</option>
+              <option>Feminino</option>
+              <option>Outro</option>
+              <option>Prefere não informar</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="escolaridade">Escolaridade</label>
+            <select id="escolaridade">
+              <option value="">Selecione</option>
+              <option>Educação infantil</option>
+              <option>Ensino fundamental incompleto</option>
+              <option>Ensino fundamental completo</option>
+              <option>Ensino médio incompleto</option>
+              <option>Ensino médio completo</option>
+              <option>Ensino superior incompleto</option>
+              <option>Ensino superior completo</option>
+              <option>Pós-graduação</option>
+            </select>
+          </div>
+        </div>
+        <p id="idadeCalculada" class="form-hint"></p>
+        <p id="faixaCalculada" class="form-hint"></p>
+      </div>
+
+      <!-- CARD 2: Subtestes -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <span class="form-card-num">2</span>
+          <div>
+            <div class="form-card-title">Pontos Brutos dos Subtestes</div>
+            <div class="form-card-desc">Informe os valores obtidos na aplicação</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Subteste</th>
+                <th class="center" style="width:100px">Ponto Bruto</th>
+              </tr>
+            </thead>
+            <tbody id="tbodySubtestes"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CARD 3: Ações -->
+      <div class="form-card">
+        <div class="action-row">
+          <button class="btn-primary" onclick="calcular(true)">💾 Salvar e Gerar PDF</button>
+          <button class="btn-secondary" onclick="calcular(false)">📊 Somente Calcular</button>
+        </div>
+      </div>
+
+      <!-- RELATÓRIO (aparece após calcular) -->
+      <div id="relatorio" class="card report" style="display:none;"></div>
+    </main>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script>if (!isAuthed()) location.href = '/login.html';</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="/Correcao_testes/WAIS/script.js"></script>
+</body>
+</html>
