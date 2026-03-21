@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | Equilibrium</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="login-screen">
+    <div class="login-card">
+      <img class="login-logo" src="/logo3.png" alt="Equilibrium" onerror="this.style.display='none'" />
+      <p class="login-subtitle">Acesso restrito</p>
+      <div class="login-form">
+        <div class="field">
+          <label for="loginUser">Usuário</label>
+          <select id="loginUser"></select>
+        </div>
+        <div class="field">
+          <label for="loginPass">Senha</label>
+          <input type="password" id="loginPass" placeholder="Digite sua senha" />
+        </div>
+        <button class="btn-primary w-full" id="btnLogin">Entrar</button>
+        <div id="loginError" class="login-error"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script>
+    // Se já logado, redireciona para home
+    if (isAuthed()) { location.href = '/'; }
+
+    // Popular select
+    const sel = document.getElementById('loginUser');
+    sel.innerHTML = '<option value="" selected disabled>Selecione um usuário...</option>'
+      + getUsers().map(u => `<option value="${u.id}">${u.label}</option>`).join('');
+
+    function handleLogin() {
+      const err = document.getElementById('loginError');
+      err.textContent = '';
+      const res = doLogin(sel.value, document.getElementById('loginPass').value);
+      if (!res.ok) { err.textContent = res.message; return; }
+      location.href = '/';
+    }
+
+    document.getElementById('btnLogin').addEventListener('click', handleLogin);
+    document.getElementById('loginPass').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleLogin();
+    });
+  </script>
+</body>
+</html>
