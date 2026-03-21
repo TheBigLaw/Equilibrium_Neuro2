@@ -19,9 +19,9 @@ const MOCK_PACIENTES = [
 ];
 
 const TESTES = [
-  { nome:"WAIS-III", desc:"Adultos (16-89 anos)", status:"Ativo", color:"blue", href:"/Correcao_testes/WAIS/novo-laudo.html" },
-  { nome:"WISC-IV", desc:"Crianças (6-16 anos)", status:"Ativo", color:"green", href:"/Correcao_testes/WISC_IV/novo-laudo.html" },
-  { nome:"SRS-2", desc:"Resp. Social (2.5-65 anos)", status:"Ativo", color:"teal", href:"/Correcao_testes/SRS2/index.html" },
+  { nome:"WAIS-III", desc:"Adultos (16-89 anos)", status:"Ativo", color:"blue", href:"/Equilibrium_Neuro2/Correcao_testes/WAIS/novo-laudo.html" },
+  { nome:"WISC-IV", desc:"Crianças (6-16 anos)", status:"Ativo", color:"green", href:"/Equilibrium_Neuro2/Correcao_testes/WISC_IV/novo-laudo.html" },
+  { nome:"SRS-2", desc:"Resp. Social (2.5-65 anos)", status:"Ativo", color:"teal", href:"/Equilibrium_Neuro2/Correcao_testes/SRS2/index.html" },
   { nome:"WPPSI-IV", desc:"Pré-escola (2.6-7.7 anos)", status:"Em breve", color:"gray" },
   { nome:"RAVLT", desc:"Memória verbal", status:"Em breve", color:"gray" },
   { nome:"TDE-II", desc:"Desempenho escolar", status:"Em breve", color:"gray" },
