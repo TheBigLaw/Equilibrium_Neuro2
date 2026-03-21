@@ -1,0 +1,274 @@
+/* ═══════════════════════════════════
+   CHECKLIST — Estilos específicos
+   ═══════════════════════════════════ */
+
+/* --- Dados do paciente --- */
+.cl-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.cl-patient {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.cl-patient .full {
+  grid-column: 1 / -1;
+}
+
+.cl-field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--blue, #1a56db);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 5px;
+}
+
+.cl-field input,
+.cl-field textarea {
+  width: 100%;
+  padding: 10px 13px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.cl-field input:focus,
+.cl-field textarea:focus {
+  border-color: var(--blue-mid);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.cl-field textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* --- Abas --- */
+.cl-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.cl-tab {
+  padding: 10px 22px;
+  border-radius: 10px 10px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  background: var(--bg, #f1f5f9);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.cl-tab:hover {
+  background: #e8edf4;
+}
+
+.cl-tab.active {
+  background: var(--card, #fff);
+  color: var(--blue, #1a56db);
+  font-weight: 700;
+  position: relative;
+}
+
+.cl-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--card, #fff);
+}
+
+.tab-count {
+  display: inline-block;
+  background: var(--blue-light, #dbeafe);
+  color: var(--blue, #1a56db);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-left: 6px;
+}
+
+/* --- Tabela de instrumentos --- */
+.cl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.cl-table th {
+  padding: 9px 10px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #1e40af;
+  background: #eff6ff;
+  border-bottom: 2px solid #dbeafe;
+}
+
+.cl-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.cl-table tr:hover td {
+  background: #f8fafc;
+}
+
+.cl-table .col-check {
+  width: 40px;
+  text-align: center;
+}
+
+.cl-table .col-date {
+  width: 130px;
+}
+
+.cl-table .col-age {
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.cl-table input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue, #1a56db);
+  cursor: pointer;
+}
+
+.cl-table input[type="date"] {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+}
+
+.cl-table input[type="date"]:focus {
+  border-color: var(--blue-mid);
+}
+
+.cl-table .inst-name {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.cl-table .inst-desc {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+/* Linha selecionada */
+.cl-table tr.checked td {
+  background: #f0fdf4;
+}
+
+.cl-table tr.checked .inst-name {
+  color: var(--green, #059669);
+}
+
+/* --- Botões de ação --- */
+.cl-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ═══════════════════════════════════
+   IMPRESSÃO
+   ═══════════════════════════════════ */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .sidebar,
+  .page-header,
+  .cl-actions,
+  .no-print {
+    display: none !important;
+  }
+
+  .main-content {
+    margin: 0 !important;
+    padding: 10px !important;
+    max-width: 100% !important;
+  }
+
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+
+  /* Mostrar todas as abas na impressão */
+  .cl-tab-panel {
+    display: block !important;
+  }
+
+  .cl-tab-panel::before {
+    content: attr(data-title);
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+    color: #1e40af;
+    margin: 16px 0 8px;
+  }
+
+  .cl-tabs {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════
+   RESPONSIVO
+   ═══════════════════════════════════ */
+@media (max-width: 768px) {
+  .cl-patient {
+    grid-template-columns: 1fr;
+  }
+
+  .cl-tabs {
+    flex-wrap: wrap;
+  }
+
+  .cl-tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .cl-table .col-date {
+    width: 110px;
+  }
+}
