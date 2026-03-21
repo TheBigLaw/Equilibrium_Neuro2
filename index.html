@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Equilibrium | Neuropsicologia</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo_app.png" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ══════ LOGIN ══════ -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <img class="login-logo" src="logo3.png" alt="Equilibrium" onerror="this.style.display='none'" />
+      <p class="login-subtitle">Acesso restrito</p>
+      <div class="login-form">
+        <div class="field">
+          <label for="loginUser">Usuário</label>
+          <select id="loginUser"></select>
+        </div>
+        <div class="field">
+          <label for="loginPass">Senha</label>
+          <input type="password" id="loginPass" placeholder="Digite sua senha" />
+        </div>
+        <button class="btn-primary w-full" id="btnLogin">Entrar</button>
+        <div id="loginError" class="login-error"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ APP SHELL ══════ -->
+  <div id="appShell" class="app-shell" style="display:none;">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="logo2.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'" />
+        <div>
+          <div class="brand-name">Equilibrium</div>
+          <div class="brand-sub">Neuropsicologia</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-page="pacientes">
+          <span class="nav-icon">👤</span>
+          <span>Pacientes</span>
+        </button>
+        <button class="nav-item" data-page="correcao">
+          <span class="nav-icon">✏️</span>
+          <span>Correção de Testes</span>
+        </button>
+        <button class="nav-item" data-page="relatorios">
+          <span class="nav-icon">📄</span>
+          <span>Relatórios</span>
+        </button>
+        <button class="nav-item" data-page="checklist">
+          <span class="nav-icon">✅</span>
+          <span>Checklist</span>
+        </button>
+        <button class="nav-item" data-page="config">
+          <span class="nav-icon">⚙️</span>
+          <span>Configurações</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">A</div>
+          <div>
+            <div class="user-name" id="userName">Admin</div>
+            <div class="user-role">Profissional</div>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="doLogout()">Sair</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title" id="pageTitle">Dashboard</h1>
+          <p class="page-subtitle" id="pageSubtitle">Bem-vindo ao sistema</p>
+        </div>
+        <div class="header-actions" id="headerActions"></div>
+      </div>
+
+      <div class="page-body" id="pageBody">
+        <!-- Conteúdo dinâmico injetado aqui -->
+      </div>
+    </main>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="js/auth.js"></script>
+  <script src="js/pages.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
