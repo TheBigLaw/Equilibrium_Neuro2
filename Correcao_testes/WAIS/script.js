@@ -332,7 +332,7 @@ function montarRelatorio(data) {
   rel.innerHTML = `
     <div class="report">
       <div class="report-header">
-        <img class="report-logo report-logo-top" src="/logo2.png" alt="Logo" onerror="this.style.display='none'">
+        <img class="report-logo report-logo-top" src="/Equilibrium_Neuro2/logo2.png" alt="Logo" onerror="this.style.display='none'">
         <div class="report-title">
           <div class="t1">Relatório – WAIS</div>
           <div class="t2">Conversão PB → Ponderado e somatórios por índice</div>
@@ -395,7 +395,7 @@ function montarRelatorio(data) {
       <div class="report-footer">
         <div class="muted">Documento gerado automaticamente</div>
         <button class="btn-print no-print" onclick="imprimirRelatorio()">Imprimir (PDF)</button>
-        <img class="report-logo report-logo-bottom" src="/logo2.png" alt="Logo" onerror="this.style.display='none'">
+        <img class="report-logo report-logo-bottom" src="/Equilibrium_Neuro2/logo2.png" alt="Logo" onerror="this.style.display='none'">
       </div>
     </div>`;
   desenharGraficos(resultados, indicesInfo, qiInfo, compostos);
