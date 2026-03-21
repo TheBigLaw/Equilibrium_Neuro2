@@ -1,0 +1,438 @@
+/* ═══════════════════════════════════
+   FORM.CSS — Estilos dos formulários de laudo
+   Compartilhado entre WAIS, WISC-IV, etc.
+   ═══════════════════════════════════ */
+
+/* --- Form cards (seções numeradas) --- */
+.form-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 22px 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.form-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.form-card-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.form-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.form-card-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* --- Form grid --- */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue-dark, #1e40af);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 400;
+  font-family: inherit;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--blue-mid);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.6;
+}
+
+.form-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+/* --- Subteste input rows dentro da tabela --- */
+.tbl input[type="number"] {
+  width: 80px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.tbl input[type="number"]:focus {
+  border-color: var(--blue-mid);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.tbl input[type="number"]::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* --- Breadcrumbs --- */
+.breadcrumb {
+  color: var(--blue-mid);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.breadcrumb:hover {
+  text-decoration: underline;
+}
+
+/* ═══════════════════════════════════
+   RELATÓRIO (dentro do formulário)
+   ═══════════════════════════════════ */
+.report {
+  margin-top: 20px;
+}
+
+.report-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 2px solid rgba(13, 71, 161, 0.12);
+}
+
+.report-title {
+  flex: 1;
+  text-align: center;
+}
+
+.report-title .t1 {
+  font-weight: 800;
+  color: var(--blue-dark, #0d47a1);
+  font-size: 18px;
+  letter-spacing: 0.2px;
+}
+
+.report-title .t2 {
+  color: var(--text-secondary);
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.report-meta {
+  text-align: right;
+  min-width: 140px;
+}
+
+.report-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.report-logo-bottom {
+  width: 34px;
+  height: 34px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  align-items: baseline;
+}
+
+.info-grid .k {
+  color: var(--blue-dark, #0d47a1);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.info-grid .v {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Report sections */
+.report .section {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(227, 242, 253, 0.5);
+}
+
+.report .section h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue-dark, #0d47a1);
+  margin-bottom: 8px;
+  letter-spacing: 0.2px;
+}
+
+/* Matrix */
+.matrix-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  overflow: auto;
+}
+
+.wisc-matrix {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.wisc-matrix th,
+.wisc-matrix td {
+  border: 1px solid rgba(13, 71, 161, 0.15);
+  padding: 5px 5px;
+  vertical-align: middle;
+  font-size: 10px;
+}
+
+.wisc-matrix thead th {
+  background: rgba(13, 71, 161, 0.06);
+  color: var(--blue-dark, #0d47a1);
+  font-weight: 800;
+}
+
+.wisc-matrix .idx { text-align: center; width: 50px; }
+.wisc-matrix .col-sub { min-width: 140px; }
+.wisc-matrix .col-pb,
+.wisc-matrix .col-pp { width: 60px; text-align: center; }
+.wisc-matrix td.fill { background: rgba(13, 71, 161, 0.08); }
+
+.wisc-matrix .pill {
+  display: inline-block;
+  min-width: 26px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--blue-dark, #0d47a1);
+  color: #fff;
+  font-weight: 800;
+  font-size: 10px;
+  text-align: center;
+}
+
+.wisc-matrix .pill.sup { background: rgba(13, 71, 161, 0.65); }
+
+.wisc-matrix tfoot td {
+  font-weight: 900;
+  background: rgba(13, 71, 161, 0.06);
+  text-align: center;
+}
+
+.wisc-matrix tfoot .sum-label {
+  text-align: left;
+  color: var(--blue-dark, #0d47a1);
+}
+
+/* Perfil */
+.perfil-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  overflow: hidden;
+}
+
+.perfil-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 10px;
+}
+
+.perfil-table th,
+.perfil-table td {
+  border: 1px solid rgba(13, 71, 161, 0.15);
+  padding: 5px 4px;
+  text-align: center;
+  font-size: 10px;
+}
+
+.perfil-table thead th.perfil-group {
+  background: rgba(13, 71, 161, 0.08);
+  font-weight: 800;
+  color: var(--blue-dark, #0d47a1);
+}
+
+.perfil-table thead th.perfil-code {
+  background: rgba(13, 71, 161, 0.04);
+  font-weight: 800;
+  color: var(--blue-dark, #0d47a1);
+}
+
+.perfil-table td.perfil-val {
+  background: #fff;
+  font-weight: 800;
+  color: var(--blue-dark, #0d47a1);
+}
+
+.canvas-wrap {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.perfil-canvas {
+  min-height: 400px;
+  padding-top: 8px;
+}
+
+/* Layout 2 colunas */
+.duas-colunas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+/* Interpretação */
+.interp {
+  text-align: justify;
+  line-height: 1.6;
+  margin: 8px 0;
+  font-size: 12px;
+}
+
+/* Footer */
+.report-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px 18px;
+  border-top: 2px solid rgba(13, 71, 161, 0.12);
+}
+
+.muted {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.no-break {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Print button */
+.btn-print {
+  border: 1px solid rgba(13, 71, 161, 0.2);
+  background: rgba(13, 71, 161, 0.04);
+  color: var(--blue-dark, #0d47a1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ═══════════════════════════════════
+   PRINT
+   ═══════════════════════════════════ */
+@media print {
+  @page { size: A4; margin: 12mm; }
+
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+  body * { visibility: hidden !important; }
+
+  #relatorio, #relatorio * {
+    visibility: visible !important;
+  }
+
+  #relatorio {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .sidebar, .page-header, .form-card, .action-row, .no-print {
+    display: none !important;
+  }
+
+  .main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .report .section,
+  .report .perfil-card,
+  .report .matrix-card,
+  .report .report-header,
+  .report .report-footer {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .report .matrix-card { overflow: visible !important; }
+  .report .perfil-canvas { height: 340px !important; }
+
+  .duas-colunas { grid-template-columns: 1fr 1fr !important; }
+}
+
+/* ═══════════════════════════════════
+   RESPONSIVO
+   ═══════════════════════════════════ */
+@media (max-width: 1100px) {
+  .duas-colunas { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
