@@ -246,7 +246,7 @@ function montarRelatorio(data) {
   rel.innerHTML = `
     <div class="report">
       <div class="report-header">
-        <img class="report-logo report-logo-top" src="/logo2.png" alt="Logo" onerror="this.style.display='none'">
+        <img class="report-logo report-logo-top" src="/Equilibrium_Neuro2/logo2.png" alt="Logo" onerror="this.style.display='none'">
         <div class="report-title"><div class="t1">Relatório – WISC-IV</div><div class="t2">Correção automatizada via API</div></div>
         <div class="report-meta"><div class="badge">Faixa: ${faixa}</div><div class="muted">Idade: ${idade.anos}a ${idade.meses}m</div></div>
       </div>
@@ -268,7 +268,7 @@ function montarRelatorio(data) {
         </tbody></table></div>
       </div>
       <div class="section no-break"><h3>Interpretação (síntese)</h3>${gerarTextoInterpretativo({ nome, compostos }).split("\n\n").map(p => `<p class="interp">${p}</p>`).join("")}</div>
-      <div class="report-footer"><div class="muted">Documento gerado automaticamente</div><button class="btn-print no-print" onclick="imprimirRelatorio()">Imprimir (PDF)</button><img class="report-logo report-logo-bottom" src="/logo2.png" alt="Logo" onerror="this.style.display='none'"></div>
+      <div class="report-footer"><div class="muted">Documento gerado automaticamente</div><button class="btn-print no-print" onclick="imprimirRelatorio()">Imprimir (PDF)</button><img class="report-logo report-logo-bottom" src="/Equilibrium_Neuro2/logo2.png" alt="Logo" onerror="this.style.display='none'"></div>
     </div>`;
     desenharGraficos(resultados);
 }
