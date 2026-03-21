@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Check List | Equilibrium</title>
+  <link rel="stylesheet" href="/Equilibrium_Neuro2/style.css" />
+  <link rel="stylesheet" href="/Equilibrium_Neuro2/check_list/checklist.css" />
+  <link rel="icon" type="image/png" href="/Equilibrium_Neuro2/logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="/Equilibrium_Neuro2/logo2.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'" />
+        <div>
+          <div class="brand-name">Equilibrium</div>
+          <div class="brand-sub">Neuropsicologia</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item" href="/Equilibrium_Neuro2/"><span class="nav-icon">📊</span><span>Dashboard</span></a>
+        <a class="nav-item" href="/Equilibrium_Neuro2/#pacientes"><span class="nav-icon">👤</span><span>Pacientes</span></a>
+        <a class="nav-item" href="/Equilibrium_Neuro2/Correcao_testes/"><span class="nav-icon">✏️</span><span>Correção de Testes</span></a>
+        <a class="nav-item" href="/Equilibrium_Neuro2/#relatorios"><span class="nav-icon">📄</span><span>Relatórios</span></a>
+        <a class="nav-item active" href="/Equilibrium_Neuro2/check_list/"><span class="nav-icon">✅</span><span>Checklist</span></a>
+        <a class="nav-item" href="/Equilibrium_Neuro2/#config"><span class="nav-icon">⚙️</span><span>Configurações</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">A</div>
+          <div>
+            <div class="user-name">Admin</div>
+            <div class="user-role">Profissional</div>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="doLogout()">Sair</button>
+      </div>
+    </aside>
+
+    <!-- CONTEÚDO -->
+    <main class="main-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Check List — Seleção de Instrumentos</h1>
+          <p class="page-subtitle">Preencha os dados do paciente, selecione os testes e imprima o formulário</p>
+        </div>
+      </div>
+
+      <!-- DADOS DO PACIENTE -->
+      <div class="card" style="margin-bottom: 16px;">
+        <h3 class="cl-section-title">Dados do Paciente</h3>
+        <div class="cl-patient">
+          <div class="cl-field">
+            <label for="clNome">Nome do Paciente</label>
+            <input type="text" id="clNome" placeholder="Nome completo" />
+          </div>
+          <div class="cl-field">
+            <label for="clCpf">CPF</label>
+            <input type="text" id="clCpf" placeholder="000.000.000-00" />
+          </div>
+          <div class="cl-field">
+            <label for="clIdade">Idade (Anos / Meses / Dias)</label>
+            <input type="text" id="clIdade" placeholder="Ex: 8a 3m 15d" />
+          </div>
+          <div class="cl-field full">
+            <label for="clHipoteses">Hipóteses</label>
+            <textarea id="clHipoteses" placeholder="Hipóteses diagnósticas..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABAS DE INSTRUMENTOS -->
+      <div class="card">
+        <div class="cl-tabs">
+          <button class="cl-tab active" data-tab="pre">
+            Pré-Escolar <span class="tab-count" id="countPre">0</span>
+          </button>
+          <button class="cl-tab" data-tab="esc">
+            Escolar <span class="tab-count" id="countEsc">0</span>
+          </button>
+          <button class="cl-tab" data-tab="adu">
+            Adultos <span class="tab-count" id="countAdu">0</span>
+          </button>
+        </div>
+
+        <!-- PRÉ-ESCOLAR -->
+        <div class="cl-tab-panel" id="panelPre" data-title="Pré-Escolar">
+          <table class="cl-table" id="tablePre">
+            <thead>
+              <tr>
+                <th class="col-check">✓</th>
+                <th>Instrumento</th>
+                <th>O que Avalia</th>
+                <th>Idade</th>
+                <th class="col-date">Data Aplicação</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- ESCOLAR -->
+        <div class="cl-tab-panel" id="panelEsc" style="display:none" data-title="Escolar">
+          <table class="cl-table" id="tableEsc">
+            <thead>
+              <tr>
+                <th class="col-check">✓</th>
+                <th>Instrumento</th>
+                <th>O que Avalia</th>
+                <th>Idade</th>
+                <th class="col-date">Data Aplicação</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- ADULTOS -->
+        <div class="cl-tab-panel" id="panelAdu" style="display:none" data-title="Adultos">
+          <table class="cl-table" id="tableAdu">
+            <thead>
+              <tr>
+                <th class="col-check">✓</th>
+                <th>Instrumento</th>
+                <th>O que Avalia</th>
+                <th>Idade</th>
+                <th class="col-date">Data Aplicação</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="cl-actions no-print">
+          <button class="btn-primary" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+          <button class="btn-secondary" onclick="limparTudo()">🗑️ Limpar Tudo</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/Equilibrium_Neuro2/js/auth.js"></script>
+  <script>if (!isAuthed()) location.href = '/Equilibrium_Neuro2/login.html';</script>
+  <script src="/Equilibrium_Neuro2/check_list/checklist.js"></script>
+</body>
+</html>
