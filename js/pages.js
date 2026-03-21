@@ -186,23 +186,11 @@ function renderRelatorios() {
 }
 
 // ═══════════════════════════════════
-// CHECKLIST
+// CHECKLIST — redireciona para a página completa
 // ═══════════════════════════════════
 function renderChecklist() {
-  const done = CHECKLIST.filter(c => c.done).length;
-  return `
-    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;">
-      <strong>${done}</strong> de <strong>${CHECKLIST.length}</strong> testes implementados
-    </p>
-    <div class="check-grid">
-      ${CHECKLIST.map(c => `
-        <div class="check-item ${c.done ? 'done' : ''}">
-          <span>${c.done ? '✅' : '⬜'}</span>
-          <span class="check-name">${c.nome}</span>
-        </div>
-      `).join("")}
-    </div>
-  `;
+  location.href = '/Equilibrium_Neuro2/check_list/index.html';
+  return '';
 }
 
 // ═══════════════════════════════════
