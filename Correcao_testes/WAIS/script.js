@@ -278,7 +278,85 @@ function atualizarPreviewIdade() {
 }
 
 /* ═══════════════════════════════════
-   CALCULAR — captura novos campos
+   LOADING OVERLAY + MODAL
+   ═══════════════════════════════════ */
+function showLoading(msg) {
+  const overlay = document.createElement("div");
+  overlay.id = "loadingOverlay";
+  overlay.className = "loading-overlay";
+  overlay.innerHTML = `<div class="loading-card">
+    <div class="loading-spinner"></div>
+    <div class="loading-title">${msg || "Gerando relatório..."}</div>
+    <div class="loading-sub">Conectando com a API e processando dados</div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+function hideLoading() {
+  const el = document.getElementById("loadingOverlay");
+  if (el) el.remove();
+}
+
+function openReportModal() {
+  const rel = document.getElementById("relatorio");
+  if (!rel) return;
+
+  // Remove modal anterior se existir
+  closeReportModal();
+
+  const backdrop = document.createElement("div");
+  backdrop.id = "reportModal";
+  backdrop.className = "report-modal-backdrop";
+  backdrop.innerHTML = `
+    <div class="report-modal">
+      <div class="report-modal-toolbar no-print">
+        <div class="toolbar-title">📄 Relatório Gerado</div>
+        <div class="toolbar-actions">
+          <button class="toolbar-btn toolbar-btn-primary" onclick="imprimirRelatorio()">🖨️ Imprimir / Salvar PDF</button>
+          <button class="toolbar-btn toolbar-btn-secondary" onclick="closeReportModal()">✕ Fechar</button>
+        </div>
+      </div>
+      <div class="report-modal-body" id="reportModalBody"></div>
+    </div>`;
+
+  document.body.appendChild(backdrop);
+
+  // Mover conteúdo do relatório para o modal
+  const body = document.getElementById("reportModalBody");
+  body.appendChild(rel);
+  rel.style.display = "block";
+
+  // Fechar ao clicar no backdrop
+  backdrop.addEventListener("click", function(e) {
+    if (e.target === backdrop) closeReportModal();
+  });
+
+  // Fechar com ESC
+  document.addEventListener("keydown", _escHandler);
+}
+
+function _escHandler(e) {
+  if (e.key === "Escape") closeReportModal();
+}
+
+function closeReportModal() {
+  const modal = document.getElementById("reportModal");
+  if (!modal) return;
+
+  // Devolver o relatório para o main content (oculto)
+  const rel = document.getElementById("relatorio");
+  if (rel) {
+    const main = document.querySelector(".main-content");
+    if (main) { main.appendChild(rel); }
+    rel.style.display = "none";
+  }
+
+  modal.remove();
+  document.removeEventListener("keydown", _escHandler);
+}
+
+/* ═══════════════════════════════════
+   CALCULAR — com loading + modal
    ═══════════════════════════════════ */
 async function calcular(salvar) {
   try {
@@ -289,7 +367,6 @@ async function calcular(salvar) {
     const sexo = document.getElementById("sexo")?.value || "";
     const escolaridade = document.getElementById("escolaridade")?.value || "";
 
-    // Novos campos
     const profNome = (document.getElementById("profNome")?.value || "").trim();
     const profCRP = (document.getElementById("profCRP")?.value || "").trim();
     const profEspecialidade = (document.getElementById("profEspecialidade")?.value || "").trim();
@@ -312,6 +389,9 @@ async function calcular(salvar) {
     }
     if (Object.keys(brutos).length === 0) { alert("Preencha ao menos um subteste."); return; }
 
+    // ► LOADING
+    showLoading(salvar ? "Salvando e gerando relatório..." : "Calculando resultados...");
+
     const API_URL = "https://equilibrium-api-yjxx.onrender.com/wais/calcular";
     const response = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nasc, apl, brutos }) });
     const data = await response.json();
@@ -327,9 +407,23 @@ async function calcular(salvar) {
       const laudos = getLaudos();
       laudos.unshift({ nome, dataAplicacao: apl, faixa, createdAt: new Date().toISOString(), htmlRelatorio: rel.outerHTML });
       setLaudos(laudos);
-      alert("Laudo salvo!");
     }
+
+    // ► HIDE LOADING + OPEN MODAL
+    hideLoading();
+
+    if (salvar) {
+      // Salvar: abre modal e já dispara print
+      openReportModal();
+      await new Promise(r => setTimeout(r, 400));
+      window.print();
+    } else {
+      // Somente calcular: abre modal para visualizar
+      openReportModal();
+    }
+
   } catch (e) {
+    hideLoading();
     console.error(e);
     alert(`Erro ao calcular: ${e.message}`);
   }
@@ -607,8 +701,11 @@ async function baixarPDFSalvo(index) {
 }
 
 async function imprimirRelatorio() {
-  const rel = document.getElementById("relatorio"); if (!rel) return;
-  await esperarImagensCarregarem(rel); await new Promise(r => setTimeout(r, 250)); window.print();
+  const rel = document.getElementById("relatorio");
+  if (!rel) return;
+  await esperarImagensCarregarem(rel);
+  await new Promise(r => setTimeout(r, 250));
+  window.print();
 }
 
 (function init() {
@@ -623,3 +720,5 @@ async function imprimirRelatorio() {
 window.calcular = calcular;
 window.imprimirRelatorio = imprimirRelatorio;
 window.baixarPDFSalvo = baixarPDFSalvo;
+window.closeReportModal = closeReportModal;
+window.openReportModal = openReportModal;
