@@ -431,238 +431,300 @@ async function calcular(salvar) {
 }
 
 /* ═══════════════════════════════════
-   CHART.JS
+   HELPERS — Badges e Barras (sem Chart.js)
    ═══════════════════════════════════ */
-let chartSub = null;
-let chartIdx = null;
+function clBadgeClass(cl) {
+  const m = {"Muito Superior":"cl-vs","Superior":"cl-s","Médio Superior":"cl-ms","Médio":"cl-m","Médio Inferior":"cl-mi","Limítrofe":"cl-l","Extremamente Baixo":"cl-eb","Inferior":"cl-inf"};
+  return m[cl] || "cl-m";
+}
+function clBadge(cl) { return `<span class="cl-badge ${clBadgeClass(cl)}">${cl}</span>`; }
 
-const WISC_SCATTER_PLUGIN = {
-  id: "wiscScatterDecor",
-  beforeDraw(chart, args, opts) {
-    const { ctx, chartArea, scales } = chart;
-    if (!chartArea) return;
-    if (opts?.band && scales?.y) {
-      const yTop = scales.y.getPixelForValue(opts.band.max);
-      const yBot = scales.y.getPixelForValue(opts.band.min);
-      ctx.save(); ctx.fillStyle = "rgba(13,71,161,0.12)";
-      ctx.fillRect(chartArea.left, yTop, chartArea.right - chartArea.left, yBot - yTop); ctx.restore();
-    }
-    if (Array.isArray(opts?.vlines) && scales?.x) {
-      ctx.save(); ctx.strokeStyle = "rgba(13,71,161,0.35)"; ctx.lineWidth = 2;
-      opts.vlines.forEach(v => { const x = scales.x.getPixelForValue(v); ctx.beginPath(); ctx.moveTo(x, chartArea.top); ctx.lineTo(x, chartArea.bottom); ctx.stroke(); });
-      ctx.restore();
-    }
-  }
-};
-
-function registrarPluginsChart() {
-  if (typeof Chart === "undefined") return;
-  if (!Chart.registry?.plugins?.get?.("wiscScatterDecor")) Chart.register(WISC_SCATTER_PLUGIN);
+function barColor(p) {
+  if (p >= 12) return "#1a56db";
+  if (p >= 9) return "#3b82f6";
+  if (p >= 7) return "#f59e0b";
+  return "#dc2626";
 }
 
-function desenharGraficos(resultados, indicesInfo, qiInfo, compostos) {
-  registrarPluginsChart();
-  const ctxSub = document.getElementById("grafSub");
-  if (ctxSub) {
-    if (chartSub) chartSub.destroy();
-    const groups = [["SM","VC","IN","CO"],["CB","CF","RM","AF"],["AR","DG","SNL"],["CD","PS"],["AO"]];
-    let x = 1; const xPos = {}; const tickAt = [];
-    groups.forEach((g, gi) => { g.forEach(code => { xPos[code] = x; tickAt[x] = code; x++; }); if (gi < groups.length - 1) x += 1; });
-    const points = Object.keys(xPos).map(code => { const v = resultados?.[code]?.ponderado; return v == null ? null : { x: xPos[code], y: Number(v) }; }).filter(Boolean);
-    chartSub = new Chart(ctxSub, {
-      type: "scatter", data: { datasets: [{ data: points, pointRadius: 5, pointHoverRadius: 6 }] },
-      options: { responsive: true, maintainAspectRatio: false, layout: { padding: { left: 6, right: 6, top: 18, bottom: 6 } },
-        plugins: { legend: { display: false }, wiscScatterDecor: { band: { min: 9, max: 11 }, vlines: [5.5, 10.5, 14.5, 17.5] } },
-        scales: { x: { type: "linear", min: 0.5, max: x - 0.5, grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0, stepSize: 1, autoSkip: false, callback: v => { const c = tickAt[Math.round(v)]; return !c ? "" : ["SNL","AO"].includes(c) ? `(${c})` : c; } } },
-          y: { min: 1, max: 19, grid: { color: "rgba(13,71,161,.10)" }, ticks: { stepSize: 1, font: { size: 10 } } } }
-      }
-    });
+function icColor(comp) {
+  if (comp >= 110) return "#059669";
+  if (comp >= 90) return "#1a56db";
+  if (comp >= 80) return "#f59e0b";
+  return "#dc2626";
+}
+
+function icScale(v) { return ((v - 40) / 130) * 100; }
+
+const GRUPOS_WAIS = [
+  { t: "Compreensão Verbal", codes: ["SM","VC","IN","CO"] },
+  { t: "Organização Perceptual", codes: ["CB","CF","RM","AF"] },
+  { t: "Memória Operacional", codes: ["AR","DG","SNL"] },
+  { t: "Velocidade de Processamento", codes: ["CD","PS"] },
+];
+
+/* ═══════════════════════════════════
+   RENDER: MATRIZ PB → PONDERADO
+   ═══════════════════════════════════ */
+function renderMatrizHTML(resultados, indicesInfo, somas) {
+  const ordem = ["CF","VC","CD","SM","CB","AR","RM","DG","IN","AF","CO","PS","SNL","AO"];
+  const flags = {
+    verbal: new Set(somas?.QI_VERBAL?.usados || []), exec: new Set(somas?.QI_EXECUCAO?.usados || []),
+    icv: new Set(indicesInfo?.ICV?.usados || []), iop: new Set(indicesInfo?.IOP?.usados || []),
+    imo: new Set(indicesInfo?.IMO?.usados || []), ivp: new Set(indicesInfo?.IVP?.usados || []),
+  };
+  const possib = {
+    verbal: new Set(["VC","SM","AR","DG","IN","CO","SNL"]), exec: new Set(["CF","CD","CB","RM","AF","PS","AO"]),
+    icv: new Set(["SM","VC","IN","CO"]), iop: new Set(["CB","CF","RM","AF"]),
+    imo: new Set(["AR","DG","SNL"]), ivp: new Set(["CD","PS"]),
+  };
+  const keys = ["verbal","exec","icv","iop","imo","ivp"];
+  const labels = ["Verbal","Exec.","ICV","IOP","IMO","IVP"];
+
+  function cell(code, key) {
+    if (!possib[key].has(code)) return '<td class="fill"></td>';
+    const v = resultados?.[code]?.ponderado;
+    if (v == null) return '<td class="fill"></td>';
+    const used = flags[key].has(code);
+    return `<td class="ctr fill"><span class="pill${used ? '' : ' pill-sup'}">${used ? v : '(' + v + ')'}</span></td>`;
   }
-  const ctxIdx = document.getElementById("grafIdx");
-  if (ctxIdx) {
-    if (chartIdx) chartIdx.destroy();
-    const labels = ["QIV","QIE","QIT","ICV","IOP","IMO","IVP"];
-    const vals = [compostos?.QI_VERBAL?.composto, compostos?.QI_EXECUCAO?.composto, compostos?.QI_TOTAL?.composto, compostos?.ICV?.composto, compostos?.IOP?.composto, compostos?.IMO?.composto, compostos?.IVP?.composto];
-    const pts = vals.map((v, i) => v == null ? null : { x: i + 1, y: Number(v) }).filter(Boolean);
-    chartIdx = new Chart(ctxIdx, {
-      type: "scatter", data: { datasets: [{ data: pts, pointRadius: 5, pointHoverRadius: 6 }] },
-      options: { responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: { x: { min: 0.5, max: labels.length + 0.5, grid: { display: false }, ticks: { autoSkip: false, font: { size: 10 }, callback: v => labels[Math.round(v) - 1] || "" } },
-          y: { suggestedMin: 40, suggestedMax: 160, ticks: { font: { size: 10 } }, grid: { color: "rgba(13,71,161,.10)" } } }
-      }
-    });
-  }
+
+  const rows = ordem.map((c, i) => {
+    const r = resultados[c] || {};
+    return `<tr${i % 2 ? ' class="alt"' : ''}>
+      <td class="sub-name">${obterNomeSubteste(c)} <span>(${c})</span></td>
+      <td class="ctr">${r.bruto ?? ""}</td>
+      <td class="ctr" style="font-weight:700">${r.ponderado ?? ""}</td>
+      ${keys.map(k => cell(c, k)).join("")}
+    </tr>`;
+  }).join("");
+
+  const somaVals = [somas?.QI_VERBAL?.soma, somas?.QI_EXECUCAO?.soma, indicesInfo?.ICV?.soma, indicesInfo?.IOP?.soma, indicesInfo?.IMO?.soma, indicesInfo?.IVP?.soma];
+
+  return `<div style="overflow-x:auto;border-radius:10px;border:1px solid #e2e8f0">
+    <table class="rpt-matrix"><thead>
+      <tr><th class="sub-name" rowspan="2">Subtestes</th><th class="ctr" rowspan="2" style="width:45px">PB</th><th class="ctr" rowspan="2" style="width:55px">Pond.</th><th class="ctr" colspan="6" style="border-bottom:1px solid rgba(59,130,246,.25)">Contribuição (Pontos Ponderados)</th></tr>
+      <tr>${labels.map(l => `<th class="ctr" style="width:48px;font-size:9px">${l}</th>`).join("")}</tr>
+    </thead><tbody>${rows}</tbody>
+    <tfoot><tr><td class="lbl" colspan="3">Soma dos Pontos Ponderados</td>${somaVals.map(v => `<td class="ctr">${v ?? "—"}</td>`).join("")}</tr></tfoot>
+    </table></div>`;
 }
 
 /* ═══════════════════════════════════
-   MONTAR RELATÓRIO — VERSÃO COMPLETA
+   RENDER: BARRAS HORIZONTAIS (perfil)
+   ═══════════════════════════════════ */
+function renderBarChart(resultados) {
+  return GRUPOS_WAIS.map(g => {
+    const bars = g.codes.map(code => {
+      const r = resultados?.[code];
+      const p = r?.ponderado != null ? +r.ponderado : 0;
+      const cl = r?.classificacao || classByPonderado(p);
+      const col = barColor(p);
+      const avgL = ((9 / 19) * 100).toFixed(1);
+      const avgW = ((2 / 19) * 100).toFixed(1);
+      return `<div class="bar-row">
+        <div class="bar-code">${code}</div>
+        <div class="bar-track">
+          <div class="bar-avg-zone" style="left:${avgL}%;width:${avgW}%"></div>
+          <div class="bar-fill" style="width:${((p / 19) * 100).toFixed(1)}%;background:${col}"></div>
+        </div>
+        <div class="bar-val">${p}</div>
+        <div class="bar-badge">${clBadge(cl)}</div>
+      </div>`;
+    }).join("");
+    return `<div style="margin-bottom:${16}px" class="no-break"><div class="bar-group-title">${g.t}</div>${bars}</div>`;
+  }).join("");
+}
+
+/* ═══════════════════════════════════
+   RENDER: IC BAR CHART (índices)
+   ═══════════════════════════════════ */
+function renderICChart(compostos, somas) {
+  const items = [
+    { s: "QIV", k: "QI_VERBAL" }, { s: "QIE", k: "QI_EXECUCAO" }, { s: "QIT", k: "QI_TOTAL" },
+    { s: "ICV", k: "ICV" }, { s: "IOP", k: "IOP" }, { s: "IMO", k: "IMO" }, { s: "IVP", k: "IVP" },
+  ];
+
+  const rows = items.map(x => {
+    const c = compostos?.[x.k];
+    if (!c?.composto) return "";
+    const comp = +c.composto;
+    const cl = classByComposite(comp);
+    const col = icColor(comp);
+    const ic = c.ic95 || [comp - 5, comp + 5];
+
+    const gridLines = [60, 80, 100, 120, 140].map(v =>
+      `<div class="ic-gridline" style="left:${icScale(v)}%;width:${v === 100 ? 2 : 1}px;background:${v === 100 ? 'rgba(100,116,139,.3)' : 'rgba(203,213,225,.3)'}"></div>`
+    ).join("");
+
+    return `<div class="ic-row">
+      <div class="ic-label" style="color:${col}">${x.s}</div>
+      <div class="ic-track">
+        ${gridLines}
+        <div class="ic-bar" style="left:${icScale(ic[0])}%;width:${icScale(ic[1]) - icScale(ic[0])}%;background:${col}30;border:1px solid ${col}40"></div>
+        <div class="ic-whisker" style="left:${icScale(ic[0])}%;background:${col}60"></div>
+        <div class="ic-whisker" style="left:${icScale(ic[1])}%;background:${col}60"></div>
+        <div class="ic-dot" style="left:${icScale(comp)}%;background:${col};box-shadow:0 2px 6px ${col}50">${comp}</div>
+      </div>
+      <div class="ic-badge">${clBadge(cl)}</div>
+    </div>`;
+  }).join("");
+
+  return `<div class="rpt-box no-break">
+    <div class="ic-scale"><span>40</span><span>60</span><span>80</span><span style="font-weight:800;color:#475569">100</span><span>120</span><span>140</span><span>160</span></div>
+    ${rows}
+    <div class="ic-legend">Linha escura = média normativa (100) · Faixa colorida = IC 95% · Círculo = composto obtido</div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════
+   MONTAR RELATÓRIO — DESIGN JSX
    ═══════════════════════════════════ */
 function montarRelatorio(data) {
   const rel = document.getElementById("relatorio");
   if (!rel) return;
-  registrarPluginsChart();
 
   const { nome, cpf, sexo, escolaridade, nasc, apl, idade, faixa, resultados, indicesInfo, qiInfo, compostos, somas,
     profNome, profCRP, profEspecialidade, motivo, obsComportamentais, recomendacoes } = data;
 
   const textoInterp = gerarTextoInterpretativo({ nome, compostos });
   const cpfTxt = formatarCPF(cpf);
-  const matriz = renderMatrizConversao({ resultados, indicesInfo, somas });
-  const perfil = renderPerfilSubtestes(resultados);
   const discrepancias = calcularDiscrepancias(compostos);
   const { media, fortes, fracos } = calcularPontosFortesFracos(resultados);
+  const dataHoje = new Date().toLocaleDateString("pt-BR");
 
-  const detalheRows = Object.values(resultados).map(r => {
-    const p = +r.ponderado; const dev = p - media; const devAbs = Math.abs(dev);
-    const devColor = dev >= 3 ? "#059669" : dev <= -3 ? "#dc2626" : "#64748b";
-    const bgRow = devAbs >= 3 ? (dev > 0 ? "background:rgba(209,250,229,0.4);" : "background:rgba(254,226,226,0.4);") : "";
-    return `<tr style="${bgRow}"><td><b>${r.nome}</b> <span class="muted">(${r.codigo})</span></td><td>${r.bruto}</td><td>${r.ponderado}</td><td>${r.classificacao || classByPonderado(r.ponderado)}</td><td style="font-weight:700;color:${devColor}">${dev >= 0 ? "+" : ""}${dev.toFixed(1)}</td></tr>`;
-  }).join("");
+  // Matriz, barras e IC chart (tudo HTML puro)
+  const matrizHTML = renderMatrizHTML(resultados, indicesInfo, somas);
+  const barsHTML = renderBarChart(resultados);
+  const icHTML = renderICChart(compostos, somas);
 
-  const discRows = discrepancias.map(d => {
-    const absD = Math.abs(d.diff);
-    const bgRow = d.sig ? "background:rgba(254,226,226,0.5);" : absD >= 8 ? "background:rgba(254,243,199,0.4);" : "";
-    const diffColor = d.sig ? "#dc2626" : absD >= 8 ? "#d97706" : "#334155";
-    return `<tr style="${bgRow}"><td>${d.par}</td><td style="text-align:center;font-weight:700">${d.va}</td><td style="text-align:center;font-weight:700">${d.vb}</td><td style="text-align:center;font-weight:800;color:${diffColor}">${d.diff > 0 ? "+" : ""}${d.diff}</td><td style="text-align:center">${d.vc}</td><td style="text-align:center"><span style="display:inline-block;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:700;background:${d.sig ? 'rgba(254,226,226,0.8);color:#dc2626' : 'rgba(209,250,229,0.8);color:#059669'}">${d.sig ? "SIM" : "NÃO"}</span></td></tr>`;
-  }).join("");
-
-  const fortesHtml = fortes.length === 0 ? `<div class="muted">Nenhum desvio ≥3 positivo</div>` : fortes.map(s => `<div style="margin-bottom:4px;"><b>${s.nome}</b> (${s.cod}) — ponderado ${s.p} — desvio +${(s.p - media).toFixed(1)}</div>`).join("");
-  const fracosHtml = fracos.length === 0 ? `<div class="muted">Nenhum desvio ≥3 negativo</div>` : fracos.map(s => `<div style="margin-bottom:4px;"><b>${s.nome}</b> (${s.cod}) — ponderado ${s.p} — desvio ${(s.p - media).toFixed(1)}</div>`).join("");
-
-  const indicesRows = [["QIV","QI_VERBAL"],["QIE","QI_EXECUCAO"],["QIT","QI_TOTAL"],["ICV","ICV"],["IOP","IOP"],["IMO","IMO"],["IVP","IVP"]].map(([rotulo, chave]) => {
+  // Tabela de índices
+  const idxItems = [["QIV","QI_VERBAL"],["QIE","QI_EXECUCAO"],["QIT","QI_TOTAL"],["ICV","ICV"],["IOP","IOP"],["IMO","IMO"],["IVP","IVP"]];
+  const idxRows = idxItems.map(([rotulo, chave], i) => {
     const s = somas?.[chave]; const c = compostos?.[chave];
-    const cls = c?.composto ? classByComposite(c.composto) : "—";
-    return `<tr><td><b>${rotulo}</b></td><td>${s?.soma ?? "—"}</td><td style="font-weight:800;">${c?.composto ?? "—"}</td><td>${c?.percentil ?? "—"}</td><td>${fmtIC(c?.ic90)}</td><td>${fmtIC(c?.ic95)}</td><td>${cls}</td></tr>`;
+    const cl = c?.composto ? classByComposite(c.composto) : "—";
+    return `<tr${i % 2 ? ' class="alt"' : ''}><td style="font-weight:700">${rotulo}</td><td class="ctr">${s?.soma ?? "—"}</td><td class="ctr" style="font-weight:800;font-size:15px;color:${icColor(c?.composto || 0)}">${c?.composto ?? "—"}</td><td class="ctr">${c?.percentil ?? "—"}</td><td class="ctr">${fmtIC(c?.ic90)}</td><td class="ctr">${fmtIC(c?.ic95)}</td><td>${clBadge(cl)}</td></tr>`;
   }).join("");
+
+  // Tabela de detalhamento
+  const detalheRows = Object.values(resultados).map((r, i) => {
+    const p = +r.ponderado; const dev = p - media; const devAbs = Math.abs(dev);
+    const devCol = dev >= 3 ? "#059669" : dev <= -3 ? "#dc2626" : "#94a3b8";
+    const cl = r.classificacao || classByPonderado(p);
+    const bg = devAbs >= 3 ? (dev > 0 ? "background:#d1fae580" : "background:#fee2e280") : (i % 2 ? 'background:#f8fafc' : '');
+    return `<tr style="${bg}"><td style="font-weight:600">${r.nome} <span style="color:#94a3b8">(${r.codigo})</span></td><td class="ctr">${r.bruto}</td><td class="ctr" style="font-weight:700;font-size:14px">${r.ponderado}</td><td>${clBadge(cl)}</td><td class="ctr" style="font-weight:700;color:${devCol};font-size:12px">${dev >= 0 ? "+" : ""}${dev.toFixed(1)}</td></tr>`;
+  }).join("");
+
+  // Tabela de discrepâncias
+  const discRows = discrepancias.map((d, i) => {
+    const absD = Math.abs(d.diff);
+    let bg = i % 2 ? '#f8fafc' : '#fff';
+    let diffCol = '#334155';
+    if (d.sig) { bg = '#fee2e2'; diffCol = '#dc2626'; }
+    else if (absD >= 8) { bg = '#fef3c7'; diffCol = '#ea580c'; }
+    return `<tr style="background:${bg}"><td style="font-weight:600">${d.par}</td><td class="ctr" style="font-weight:700">${d.va}</td><td class="ctr" style="font-weight:700">${d.vb}</td><td class="ctr" style="font-weight:800;color:${diffCol};font-size:14px">${d.diff > 0 ? "+" : ""}${d.diff}${absD >= 8 && !d.sig ? ' ⚠️' : ''}</td><td class="ctr">${d.vc}</td><td class="ctr"><span class="cl-badge ${d.sig ? 'cl-l' : 'cl-s'}">${d.sig ? "SIM" : "NÃO"}</span></td></tr>`;
+  }).join("");
+
+  // Fortes/fracos
+  const fortesHtml = fortes.length === 0 ? '<div style="font-size:12px;opacity:.7">Nenhum desvio ≥3 positivo encontrado</div>' : fortes.map(s => `<div class="sw-item"><strong>${s.nome}</strong> <span style="color:#94a3b8">(${s.cod})</span><div style="font-size:11px;margin-top:2px">Ponderado: <strong>${s.p}</strong> · Desvio: <strong>+${(s.p - media).toFixed(1)}</strong> acima da média pessoal</div></div>`).join("");
+  const fracosHtml = fracos.length === 0 ? '<div style="font-size:12px;opacity:.7">Nenhum desvio ≥3 negativo encontrado</div>' : fracos.map(s => `<div class="sw-item"><strong>${s.nome}</strong> <span style="color:#94a3b8">(${s.cod})</span><div style="font-size:11px;margin-top:2px">Ponderado: <strong>${s.p}</strong> · Desvio: <strong>${(s.p - media).toFixed(1)}</strong> abaixo da média pessoal</div></div>`).join("");
 
   rel.style.display = "block";
-  rel.innerHTML = `
-    <div class="report">
-      <!-- HEADER -->
-      <div class="rpt-header">
-        <img src="/Equilibrium_Neuro2/logo2.png" alt="Logo" onerror="this.style.display='none'">
-        <div class="rpt-header-text">
-          <div class="h1">Relatório Neuropsicológico — WAIS-III</div>
-          <div class="h2">Escala Wechsler de Inteligência para Adultos — 3ª Edição</div>
+  rel.innerHTML = `<div class="report">
+    <!-- HEADER -->
+    <div class="rpt-hdr">
+      <div class="deco1"></div><div class="deco2"></div>
+      <div class="rpt-hdr-inner">
+        <div>
+          <div class="kicker">Relatório Neuropsicológico</div>
+          <div class="title">WAIS-III</div>
+          <div class="subtitle">Escala Wechsler de Inteligência para Adultos — 3ª Edição</div>
+          <div class="sub2">Conversão PB → Ponderado e somatórios por índice</div>
         </div>
-        <div class="rpt-header-meta">
-          <div class="badge">Faixa: ${faixa}</div>
+        <div class="rpt-hdr-badge">
+          <div class="lbl">Faixa Normativa</div>
+          <div class="val">${faixa}</div>
           <div class="sub">Idade: ${idade.anos}a ${idade.meses}m</div>
         </div>
       </div>
+    </div>
 
+    <div class="rpt-body">
       <!-- 1. IDENTIFICAÇÃO -->
-      <div class="rpt-section no-break">
-        <div class="rpt-stitle theme-blue"><span class="num">1</span><span class="txt">Identificação</span></div>
-        <div class="info-grid">
-          <div><span class="k">Nome:</span> <span class="v">${nome}</span></div>
-          <div><span class="k">CPF:</span> <span class="v">${cpfTxt || "—"}</span></div>
-          <div><span class="k">Sexo:</span> <span class="v">${sexo || "—"}</span></div>
-          <div><span class="k">Escolaridade:</span> <span class="v">${escolaridade || "—"}</span></div>
-          <div><span class="k">Nascimento:</span> <span class="v">${formatarData(nasc)} (${idade.anos}a ${idade.meses}m)</span></div>
-          <div><span class="k">Aplicação:</span> <span class="v">${formatarData(apl)}</span></div>
+      <div class="rpt-sh"><span class="num">1</span><span class="sh-title">Identificação</span></div>
+      <div class="rpt-box no-break">
+        <div class="rpt-info">
+          <div><span class="lbl">Nome:</span> <span class="val bold">${nome}</span></div>
+          <div><span class="lbl">CPF:</span> <span class="val">${cpfTxt || "—"}</span></div>
+          <div><span class="lbl">Sexo:</span> <span class="val">${sexo || "—"}</span></div>
+          <div><span class="lbl">Escolaridade:</span> <span class="val">${escolaridade || "—"}</span></div>
+          <div><span class="lbl">Nascimento:</span> <span class="val">${formatarData(nasc)} (${idade.anos}a ${idade.meses}m)</span></div>
+          <div><span class="lbl">Aplicação:</span> <span class="val">${formatarData(apl)}</span></div>
         </div>
-        ${profNome ? `<div style="border-top:1px dashed #cbd5e1;margin-top:10px;padding-top:10px;" class="info-grid">
-          <div><span class="k">Profissional:</span> <span class="v">${profNome}${profCRP ? ` — ${profCRP}` : ""}</span></div>
-          <div><span class="k">Especialidade:</span> <span class="v">${profEspecialidade || "—"}</span></div>
-        </div>` : ""}
-        ${motivo ? `<div style="border-top:1px dashed #cbd5e1;margin-top:10px;padding-top:10px;"><span class="k">Motivo do encaminhamento:</span> <span class="v">${motivo}</span></div>` : ""}
+        ${profNome ? `<div class="rpt-info sep"></div><div class="rpt-info"><div><span class="lbl" style="color:#1a56db">Profissional:</span> <span class="val bold">${profNome}${profCRP ? ` — ${profCRP}` : ""}</span></div><div><span class="lbl" style="color:#1a56db">Especialidade:</span> <span class="val">${profEspecialidade || "—"}</span></div></div>` : ""}
+        ${motivo ? `<div class="rpt-info sep"></div><div><span class="lbl" style="color:#1a56db">Motivo do encaminhamento:</span> <span class="val">${motivo}</span></div>` : ""}
       </div>
 
       <!-- 2. OBSERVAÇÕES -->
-      ${obsComportamentais ? `
-      <div class="rpt-section no-break">
-        <div class="rpt-stitle theme-amber"><span class="num">2</span><span class="txt">Observações Comportamentais</span></div>
-        <div class="rpt-obs">${obsComportamentais}</div>
-      </div>` : ""}
+      ${obsComportamentais ? `<div class="rpt-sh"><span class="num" style="background:#7c3aed">2</span><span class="sh-title">Observações Comportamentais</span><span class="sh-new">Novo</span></div><div class="rpt-box-obs no-break">${obsComportamentais}</div>` : ""}
 
-      <!-- 3+4. CONVERSÃO + PERFIL (duas colunas) -->
-      <div class="rpt-cols">
-        <div class="rpt-section no-break">
-          <div class="rpt-stitle theme-teal"><span class="num">3</span><span class="txt">Conversão PB → Ponderado</span></div>
-          <div class="matrix-card">${matriz}</div>
-          <p class="muted" style="margin:6px 0 0;font-size:10px;">Células azuis = subtestes usados. Parênteses = suplementares.</p>
-        </div>
-        <div class="rpt-section no-break">
-          <div class="rpt-stitle theme-indigo"><span class="num">4</span><span class="txt">Perfil dos Subtestes</span></div>
-          <div class="perfil-card">
-            ${perfil}
-            <div class="canvas-wrap perfil-canvas"><canvas id="grafSub" height="480"></canvas></div>
-          </div>
-          <p class="muted" style="margin:6px 0 0;font-size:10px;">Faixa azul = região média (9–11).</p>
-        </div>
+      <!-- 3. CONVERSÃO PB → PONDERADO -->
+      <div class="rpt-sh"><span class="num">3</span><span class="sh-title">Conversão PB → Ponderado e Contribuição nos Índices</span><div class="sh-sub">Células azuis = subtestes usados. Parênteses = suplementares.</div></div>
+      <div class="no-break">${matrizHTML}</div>
+
+      <!-- 4. PERFIL DOS SUBTESTES -->
+      <div class="rpt-sh"><span class="num">4</span><span class="sh-title">Perfil dos Pontos Ponderados dos Subtestes</span><div class="sh-sub">Barras por domínio cognitivo. Faixa azul = média (9–11).</div></div>
+      <div class="rpt-box no-break">${barsHTML}</div>
+
+      <!-- 5. ÍNDICES E QI -->
+      <div class="rpt-sh"><span class="num">5</span><span class="sh-title">Índices e QI Total</span><div class="sh-sub">Gráfico com intervalos de confiança (95%) e tabela completa.</div></div>
+      ${icHTML}
+      <div style="border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;margin-top:16px" class="no-break">
+        <table class="rpt-tbl"><thead><tr><th>Escala</th><th class="ctr">Soma Pond.</th><th class="ctr">QI / Índice</th><th class="ctr">Rank Percentil</th><th class="ctr">IC 90%</th><th class="ctr">IC 95%</th><th>Classificação</th></tr></thead>
+        <tbody>${idxRows}</tbody></table>
       </div>
 
-      <!-- 5+6. DETALHAMENTO + ÍNDICES (duas colunas) -->
-      <div class="rpt-cols rpt-page-break">
-        <div class="rpt-section no-break">
-          <div class="rpt-stitle theme-purple"><span class="num">5</span><span class="txt">Subtestes — Detalhamento</span></div>
-          <table class="rpt-table">
-            <thead><tr><th>Subteste</th><th>PB</th><th>Pond.</th><th>Classificação</th><th>Desvio MP</th></tr></thead>
-            <tbody>${detalheRows}</tbody>
-            <tfoot><tr><td colspan="4" style="color:#0d47a1;">Média pessoal dos ponderados</td><td style="font-weight:800;color:#0d47a1;text-align:center;">${media.toFixed(1)}</td></tr></tfoot>
-          </table>
-        </div>
-        <div class="rpt-section no-break">
-          <div class="rpt-stitle theme-sky"><span class="num">6</span><span class="txt">Índices e QI Total</span></div>
-          <div class="canvas-wrap"><canvas id="grafIdx" height="260"></canvas></div>
-          <table class="rpt-table" style="margin-top:10px;">
-            <thead><tr><th>Escala</th><th>Soma</th><th>QI/Índice</th><th>Percentil</th><th>IC 90%</th><th>IC 95%</th><th>Classif.</th></tr></thead>
-            <tbody>${indicesRows}</tbody>
-          </table>
-        </div>
+      <!-- 6. DETALHAMENTO -->
+      <div class="rpt-sh"><span class="num">6</span><span class="sh-title">Subtestes — Detalhamento</span></div>
+      <div style="border-radius:10px;border:1px solid #e2e8f0;overflow:hidden" class="no-break">
+        <table class="rpt-tbl"><thead><tr><th>Subteste</th><th class="ctr">PB</th><th class="ctr">Ponderado</th><th>Classificação</th><th class="ctr" title="Desvio da média pessoal">Desvio MP</th></tr></thead>
+        <tbody>${detalheRows}</tbody>
+        <tfoot><tr><td colspan="4">Média pessoal dos ponderados</td><td class="ctr" style="font-weight:800;color:#1e40af">${media.toFixed(1)}</td></tr></tfoot></table>
       </div>
 
       <!-- 7. DISCREPÂNCIAS -->
-      <div class="rpt-section no-break">
-        <div class="rpt-stitle theme-rose"><span class="num">7</span><span class="txt">Análise de Discrepâncias entre Índices</span></div>
-        <table class="rpt-table">
-          <thead><tr><th>Comparação</th><th style="text-align:center">Índ. 1</th><th style="text-align:center">Índ. 2</th><th style="text-align:center">Diferença</th><th style="text-align:center">Val. Crítico (.05)</th><th style="text-align:center">Significativo?</th></tr></thead>
-          <tbody>${discRows}</tbody>
-        </table>
-        <p class="muted" style="margin:6px 0 0;font-size:10px;">Tabela B.2, Manual WAIS-III. 🟢 Não significativo · 🟡 Notável (≥8) · 🔴 Significativo (p < .05)</p>
+      <div class="rpt-sh"><span class="num" style="background:#7c3aed">7</span><span class="sh-title">Análise de Discrepâncias entre Índices</span><span class="sh-new">Novo</span><div class="sh-sub">Comparações pareadas com valores críticos (p < .05).</div></div>
+      <div style="border-radius:10px;border:1px solid rgba(124,58,237,.2);overflow:hidden" class="no-break">
+        <table class="rpt-tbl"><thead style="background:#ede9fe"><tr style="background:#ede9fe"><th style="color:#7c3aed;background:#ede9fe">Comparação</th><th class="ctr" style="color:#7c3aed;background:#ede9fe">Índice 1</th><th class="ctr" style="color:#7c3aed;background:#ede9fe">Índice 2</th><th class="ctr" style="color:#7c3aed;background:#ede9fe">Diferença</th><th class="ctr" style="color:#7c3aed;background:#ede9fe">Val. Crítico (.05)</th><th class="ctr" style="color:#7c3aed;background:#ede9fe">Significativo?</th></tr></thead>
+        <tbody>${discRows}</tbody></table>
       </div>
+      <div style="display:flex;gap:12px;margin-top:8px;font-size:10px;color:#64748b"><span>🟢 Não significativo</span><span>🟡 Notável (≥8)</span><span>🔴 Significativo (p < .05)</span></div>
 
       <!-- 8. FORTES / FRACOS -->
-      <div class="rpt-section no-break">
-        <div class="rpt-stitle theme-emerald"><span class="num">8</span><span class="txt">Pontos Fortes e Fracos Pessoais</span></div>
-        <p class="muted" style="margin-bottom:8px;">Média pessoal: <b style="color:#0d47a1">${media.toFixed(1)}</b> · Desvio ≥ 3 = significativo</p>
-        <div class="sw-row">
-          <div class="sw-card sw-card-strong"><h4>▲ Pontos Fortes</h4><div class="items">${fortesHtml}</div></div>
-          <div class="sw-card sw-card-weak"><h4>▼ Pontos Fracos</h4><div class="items">${fracosHtml}</div></div>
-        </div>
+      <div class="rpt-sh"><span class="num" style="background:#7c3aed">8</span><span class="sh-title">Pontos Fortes e Fracos Pessoais</span><span class="sh-new">Novo</span><div class="sh-sub">Média pessoal: ${media.toFixed(1)} · Desvio ≥ 3 pontos = significativo</div></div>
+      <div class="sw-row no-break">
+        <div class="sw-card sw-strong"><h4><span style="font-size:16px">▲</span> Pontos Fortes</h4>${fortesHtml}</div>
+        <div class="sw-card sw-weak"><h4><span style="font-size:16px">▼</span> Pontos Fracos</h4>${fracosHtml}</div>
       </div>
 
       <!-- 9. INTERPRETAÇÃO -->
-      <div class="rpt-section">
-        <div class="rpt-stitle theme-orange"><span class="num">9</span><span class="txt">Interpretação Clínica</span></div>
-        ${textoInterp.split("\n\n").map(p => `<p class="interp">${p}</p>`).join("")}
-      </div>
+      <div class="rpt-sh"><span class="num">9</span><span class="sh-title">Interpretação Clínica</span></div>
+      <div class="rpt-interp">${textoInterp.split("\\n\\n").map(p => `<p>${p}</p>`).join("")}</div>
 
       <!-- 10. RECOMENDAÇÕES -->
-      ${recomendacoes ? `
-      <div class="rpt-section no-break">
-        <div class="rpt-stitle theme-slate"><span class="num">10</span><span class="txt">Conclusão e Recomendações</span></div>
-        <div style="font-size:12px;line-height:1.7;color:#334155;white-space:pre-line;">${recomendacoes}</div>
-      </div>` : ""}
+      ${recomendacoes ? `<div class="rpt-sh"><span class="num" style="background:#7c3aed">10</span><span class="sh-title">Conclusão e Recomendações</span><span class="sh-new">Novo</span></div><div class="rpt-rec">${recomendacoes}</div>` : ""}
 
       <!-- RODAPÉ -->
-      <div class="rpt-footer">
+      <div class="rpt-foot no-break">
         <div>
-          ${profNome ? `<div style="font-weight:800;font-size:14px;color:#0f172a;">${profNome}</div>` : ""}
-          ${profCRP ? `<div style="font-size:11px;color:#64748b;">${profCRP}${profEspecialidade ? ` · ${profEspecialidade}` : ""}</div>` : ""}
-          ${profNome ? `<div class="sign">Assinatura do profissional</div>` : `<div class="muted">Documento gerado automaticamente</div>`}
+          ${profNome ? `<div style="font-weight:700;font-size:14px;color:#0f172a">${profNome}</div><div style="font-size:12px;color:#64748b">${profCRP || ""}${profEspecialidade ? ' · ' + profEspecialidade : ""}</div><div class="sign-line">Assinatura do profissional</div>` : '<div style="color:#64748b;font-size:12px">Documento gerado automaticamente</div>'}
         </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <button class="btn-print no-print" onclick="imprimirRelatorio()">🖨️ Imprimir</button>
-          <img class="rpt-footer img" src="/Equilibrium_Neuro2/logo2.png" alt="" style="width:34px;height:34px;object-fit:contain;" onerror="this.style.display='none'">
+        <div class="rpt-foot-right">
+          <div>Documento gerado em ${dataHoje}</div>
+          <div class="rpt-foot-disclaimer">Este documento é confidencial e destinado exclusivamente ao profissional solicitante. Válido apenas com assinatura.</div>
         </div>
       </div>
-      ${profNome ? `<div class="rpt-disclaimer">Este documento é confidencial e destinado exclusivamente ao profissional solicitante.</div>` : ""}
-    </div>`;
-
-  desenharGraficos(resultados, indicesInfo, qiInfo, compostos);
+    </div>
+  </div>`;
 }
 
 /* ═══════════════════════════════════
@@ -672,8 +734,8 @@ function renderListaLaudos() {
   const box = document.getElementById("listaLaudos");
   if (!box) return;
   const laudos = getLaudos();
-  if (!laudos.length) { box.innerHTML = `<p class="muted">Nenhum laudo salvo ainda.</p>`; return; }
-  box.innerHTML = `<table class="table"><thead><tr><th>Paciente</th><th>Aplicação</th><th>Faixa</th><th>Ações</th></tr></thead><tbody>${laudos.map((x, idx) => `<tr><td>${x.nome}</td><td>${x.dataAplicacao}</td><td><span class="badge">${x.faixa}</span></td><td><button class="btn-outline" onclick="baixarPDFSalvo(${idx})">Baixar PDF</button></td></tr>`).join("")}</tbody></table>`;
+  if (!laudos.length) { box.innerHTML = '<p class="muted">Nenhum laudo salvo ainda.</p>'; return; }
+  box.innerHTML = '<table class="rpt-tbl"><thead><tr><th>Paciente</th><th>Aplicação</th><th>Faixa</th><th>Ações</th></tr></thead><tbody>' + laudos.map((x, idx) => '<tr><td>' + x.nome + '</td><td>' + x.dataAplicacao + '</td><td>' + x.faixa + '</td><td><button onclick="baixarPDFSalvo(' + idx + ')">PDF</button></td></tr>').join("") + '</tbody></table>';
 }
 
 async function esperarImagensCarregarem(container) {
