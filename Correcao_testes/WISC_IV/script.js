@@ -197,7 +197,7 @@ function openReportModal() {
   const backdrop = document.createElement("div");
   backdrop.id = "reportModal";
   backdrop.className = "report-modal-backdrop";
-  backdrop.innerHTML = `<div class="report-modal"><div class="report-modal-toolbar no-print"><div class="toolbar-title">📄 Relatório Gerado</div><div class="toolbar-actions"><button class="toolbar-btn toolbar-btn-primary" onclick="imprimirRelatorio()">🖨️ Imprimir / Salvar PDF</button><button class="toolbar-btn toolbar-btn-secondary" onclick="closeReportModal()">✕ Fechar</button></div></div><div class="report-modal-body" id="reportModalBody"></div></div>`;
+  backdrop.innerHTML = `<div class="report-modal"><div class="report-modal-toolbar no-print"><div class="toolbar-title">📄 Relatório Gerado</div><div class="toolbar-actions"><button class="toolbar-btn toolbar-btn-primary" onclick="baixarPDF()">📥 Baixar PDF</button><button class="toolbar-btn toolbar-btn-secondary" onclick="window.print()">🖨️ Imprimir</button><button class="toolbar-btn toolbar-btn-secondary" onclick="closeReportModal()">✕ Fechar</button></div></div><div class="report-modal-body" id="reportModalBody"></div></div>`;
   document.body.appendChild(backdrop);
   document.getElementById("reportModalBody").appendChild(rel);
   rel.style.display = "block";
@@ -583,11 +583,31 @@ function renderListaLaudos() {
 
 async function esperarImagensCarregarem(c) { const imgs = Array.from(c.querySelectorAll("img")); await Promise.all(imgs.map(img => { if (img.complete && img.naturalWidth > 0) return Promise.resolve(); return new Promise(r => { img.onload = () => r(); img.onerror = () => r(); }); })); }
 async function baixarPDFSalvo(i) { const item = getLaudos()[i]; if (!item) return alert("Não encontrado."); const t = document.createElement("div"); t.innerHTML = item.htmlRelatorio; document.body.appendChild(t); await esperarImagensCarregarem(t); await new Promise(r => setTimeout(r, 150)); t.remove(); }
-async function imprimirRelatorio() { const rel = document.getElementById("relatorio"); if (!rel) return; await esperarImagensCarregarem(rel); await new Promise(r => setTimeout(r, 250)); window.print(); }
+async function baixarPDF() {
+  const rel = document.getElementById("relatorio");
+  if (!rel) return;
+  await esperarImagensCarregarem(rel);
+  const nome = rel.querySelector('.rpt-info .val.bold')?.textContent || 'Relatorio';
+  const nomeArquivo = 'WISC-IV_' + nome.replace(/\s+/g, '_').substring(0, 30) + '.pdf';
+  showLoading("Gerando PDF...");
+  try {
+    const opt = {
+      margin: [5, 5, 5, 5],
+      filename: nomeArquivo,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
+      jsPDF: { unit: 'mm', format: [210, 900], orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all'] }
+    };
+    await html2pdf().set(opt).from(rel).save();
+  } catch(e) { console.error("Erro ao gerar PDF:", e); alert("Erro ao gerar PDF."); }
+  finally { hideLoading(); }
+}
+async function imprimirRelatorio() { window.print(); }
 
 (function init() {
   if (document.getElementById("tbodySubtestes")) { montarInputsSubtestes(); document.getElementById("dataNascimento")?.addEventListener("change", atualizarPreviewIdade); document.getElementById("dataAplicacao")?.addEventListener("change", atualizarPreviewIdade); }
   if (document.getElementById("listaLaudos")) renderListaLaudos();
 })();
 
-window.calcular = calcular; window.imprimirRelatorio = imprimirRelatorio; window.baixarPDFSalvo = baixarPDFSalvo; window.closeReportModal = closeReportModal; window.openReportModal = openReportModal;
+window.calcular = calcular; window.imprimirRelatorio = imprimirRelatorio; window.baixarPDF = baixarPDF; window.baixarPDFSalvo = baixarPDFSalvo; window.closeReportModal = closeReportModal; window.openReportModal = openReportModal;
