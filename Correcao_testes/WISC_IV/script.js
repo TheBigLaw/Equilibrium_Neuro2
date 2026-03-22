@@ -263,8 +263,10 @@ async function calcular(salvar) {
 
     if (salvar) {
       openReportModal();
-      await new Promise(r => setTimeout(r, 400));
-      window.print();
+      setTimeout(() => {
+        const toolbar = document.querySelector(".toolbar-title");
+        if (toolbar) toolbar.textContent = "📄 Relatório Gerado — Laudo salvo com sucesso!";
+      }, 100);
     } else {
       openReportModal();
     }
