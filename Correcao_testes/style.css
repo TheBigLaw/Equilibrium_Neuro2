@@ -163,9 +163,9 @@
 .toolbar-btn-secondary:hover{background:#e2e8f0}
 .report-modal-body{padding:12px;overflow:hidden}
 
-/* ═══ PRINT ═══ */
+/* ═══ PRINT — Folha contínua (sem A4, sem quebras) ═══ */
 @media print{
-  @page{size:A4 portrait;margin:6mm 8mm}
+  @page{margin:8mm 10mm}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   body{background:#fff!important;margin:0!important;padding:0!important}
   .sidebar,.page-header,.form-card,.action-row,.no-print,.report-modal-toolbar,.loading-overlay,.app-shell{display:none!important}
@@ -173,94 +173,11 @@
   .report-modal{position:static!important;width:100%!important;max-width:100%!important;box-shadow:none!important;border-radius:0!important;margin:0!important;padding:0!important;background:#fff!important}
   .report-modal-body{max-height:none!important;overflow:visible!important;padding:0!important}
   #relatorio{display:block!important}
-  .report{border:none!important;box-shadow:none!important;margin:0!important;overflow:visible!important;border-radius:0!important;
-    transform:scale(0.82)!important;transform-origin:top left!important;width:121.95%!important}
+  .report{border:none!important;box-shadow:none!important;margin:0!important;overflow:visible!important;border-radius:0!important}
   .main-content{margin:0!important;padding:0!important;max-width:100%!important}
-
-  /* Header compacto */
-  .rpt-hdr{border-radius:0!important;padding:12px 16px 10px!important}
-  .rpt-hdr .kicker{font-size:8px!important;letter-spacing:3px!important}
-  .rpt-hdr .title{font-size:18px!important;margin-top:3px!important}
-  .rpt-hdr .subtitle{font-size:10px!important}
-  .rpt-hdr .sub2{font-size:9px!important}
-  .rpt-hdr-badge{padding:6px 10px!important}
-  .rpt-hdr-badge .val{font-size:16px!important}
-  .rpt-hdr-badge .lbl{font-size:7px!important}
-  .rpt-hdr-badge .sub{font-size:8px!important}
-  .rpt-hdr .hdr-logo{width:28px!important;height:28px!important}
-
-  /* Body sem padding grande */
-  .rpt-body{padding:0 16px 16px!important}
-
-  /* Section headers — SEM espaço extra */
-  .rpt-sh{margin-top:10px!important;margin-bottom:6px!important;break-after:avoid!important;page-break-after:avoid!important}
-  .rpt-sh .num{width:18px!important;height:18px!important;font-size:9px!important;border-radius:4px!important}
-  .rpt-sh .sh-title{font-size:11px!important}
-  .rpt-sh .sh-sub{font-size:8px!important}
-  .rpt-sh .sh-new{font-size:8px!important;padding:1px 5px!important}
-
-  /* Boxes compactos */
-  .rpt-box{padding:8px 12px!important;border-radius:6px!important}
-  .rpt-box-obs{padding:6px 10px!important;font-size:10px!important;line-height:1.5!important;border-radius:6px!important}
-
-  /* Info grid compacto */
-  .rpt-info{gap:2px 16px!important;font-size:10px!important}
-  .rpt-info .lbl{font-size:8px!important}
-  .rpt-info .val{font-size:10px!important}
-  .rpt-info .sep{margin:2px 0!important}
-
-  /* Tabelas */
-  .rpt-tbl th,.rpt-tbl td{padding:3px 5px!important;font-size:9px!important}
-  .rpt-tbl th{font-size:7.5px!important;padding:4px 5px!important}
-
-  /* Matriz */
-  .rpt-matrix th,.rpt-matrix td{padding:2px 3px!important;font-size:8px!important}
-  .rpt-matrix .sub-name{min-width:70px!important;font-size:8px!important}
-  .rpt-matrix .pill{font-size:8px!important;padding:1px 4px!important;border-radius:4px!important}
-  .rpt-matrix tfoot td{font-size:9px!important}
-
-  /* Barras — compactas */
-  .bar-row{margin-bottom:1px!important}
-  .bar-track{height:14px!important}
-  .bar-group-title{font-size:7px!important;margin-bottom:3px!important;padding-left:24px!important}
-  .bar-code{font-size:7px!important;width:20px!important}
-  .bar-val{font-size:8px!important;width:18px!important}
-  .bar-badge{width:45px!important}
-  .bar-badge .cl-badge{font-size:7px!important;padding:1px 4px!important}
-
-  /* IC chart compacto */
-  .ic-row{margin-bottom:3px!important}
-  .ic-track{height:18px!important;border-radius:4px!important}
-  .ic-label{font-size:7px!important;width:24px!important}
-  .ic-dot{width:12px!important;height:12px!important;transform:translate(-6px,-6px)!important;font-size:6px!important}
-  .ic-scale{font-size:7px!important;padding:0 28px!important}
-  .ic-legend{font-size:7px!important}
-  .ic-badge{width:55px!important}
-  .ic-badge .cl-badge{font-size:7px!important;padding:1px 4px!important}
-
-  /* SW cards */
-  .sw-row{gap:6px!important}
-  .sw-card{padding:6px 8px!important;border-radius:6px!important}
-  .sw-card h4{font-size:9px!important;margin-bottom:4px!important}
-  .sw-item{font-size:8px!important;padding:3px 6px!important;margin-bottom:3px!important;border-radius:4px!important}
-
-  /* Interpretação */
-  .rpt-interp{font-size:9.5px!important;line-height:1.55!important}
-  .rpt-interp p{margin-bottom:6px!important}
-  .rpt-rec{font-size:9.5px!important;line-height:1.5!important}
-
-  /* Footer */
-  .rpt-foot{margin-top:12px!important;padding-top:10px!important}
-  .rpt-foot .sign-line{margin-top:8px!important;font-size:8px!important}
-  .rpt-foot-right{font-size:9px!important}
-  .rpt-foot-disclaimer{font-size:7px!important}
-
-  /* Badges */
-  .cl-badge{font-size:7px!important;padding:1px 4px!important}
-
-  /* Break control */
-  .no-break{break-inside:avoid!important;page-break-inside:avoid!important}
-  .rpt-hdr{break-inside:avoid!important;page-break-inside:avoid!important}
+  .rpt-hdr{border-radius:0!important}
+  /* Zero page breaks */
+  *{break-inside:auto!important;page-break-inside:auto!important;break-before:auto!important;page-break-before:auto!important;break-after:auto!important;page-break-after:auto!important}
 }
 
 /* ═══ RESPONSIVO ═══ */
