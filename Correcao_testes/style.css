@@ -159,7 +159,9 @@
   border: 1px solid #dde4ee;
   border-radius: 10px;
   padding: 8px;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
 }
 
 .wisc-matrix { width: 100%; border-collapse: collapse; }
@@ -223,8 +225,10 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
+  overflow: hidden;
 }
 
+.duas-colunas > .section { overflow: hidden; min-width: 0; }
 .duas-colunas > .section:first-child { border-right: 1px solid #e8edf3; }
 
 /* ─── TABLE (genérica do relatório) ─── */
@@ -340,11 +344,12 @@
   background: #fff;
   border-radius: 16px;
   width: 100%;
-  max-width: 1100px;
+  max-width: 960px;
   box-shadow: 0 24px 80px rgba(0,0,0,0.25);
   position: relative;
-  margin: 0 auto;
+  margin: 0 auto 24px;
   animation: slideUpModal 0.3s ease forwards;
+  overflow: hidden;
 }
 
 @keyframes slideUpModal {
@@ -411,7 +416,13 @@
 
 .report-modal-body {
   padding: 0;
-  overflow: visible;
+  overflow: hidden;
+}
+
+/* Contain report inside modal */
+.report-modal-body .report {
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* ═══════════════════════════════════════════════
@@ -428,47 +439,61 @@
     print-color-adjust: exact !important;
   }
 
-  body { background: #fff !important; }
-  body * { visibility: hidden !important; }
+  body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
 
-  /* Show modal report content when printing */
-  .report-modal-body, .report-modal-body *,
-  #relatorio, #relatorio * { visibility: visible !important; }
-
-  .report-modal-body, #relatorio {
-    position: absolute;
-    left: 0; top: 0;
-    width: 100%;
-  }
-
-  /* Hide everything non-report */
+  /* Hide all UI chrome */
   .sidebar, .page-header, .form-card, .action-row, .no-print,
-  .report-modal-toolbar, .report-modal-backdrop, .loading-overlay {
+  .report-modal-toolbar, .loading-overlay, .app-shell {
     display: none !important;
   }
 
+  /* The modal backdrop becomes transparent full-page container */
+  .report-modal-backdrop {
+    position: static !important;
+    background: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* The modal itself becomes full-width, no shadow */
   .report-modal {
-    position: absolute !important;
-    left: 0 !important; top: 0 !important;
-    width: 100% !important; max-width: 100% !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
   }
 
-  .main-content {
-    margin: 0 !important;
+  /* Modal body: no scroll constraints */
+  .report-modal-body {
+    max-height: none !important;
+    overflow: visible !important;
     padding: 0 !important;
-    max-width: 100% !important;
   }
 
-  /* Report container */
+  /* Report visible */
+  #relatorio {
+    display: block !important;
+  }
+
   .report {
     border: none !important;
     box-shadow: none !important;
     margin: 0 !important;
     padding: 0 !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* Also handle case where report is NOT in modal (fallback) */
+  .main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
   }
 
   /* Header — keep gradient */
@@ -542,27 +567,10 @@
     page-break-inside: avoid !important;
   }
 
-  /* Force page break before heavy sections if needed */
   .report .page-break-before {
     break-before: page !important;
     page-break-before: always !important;
   }
-
-  /* Obs comportamentais */
-  .obs-box {
-    background: #fffbeb !important;
-    border: 1px solid #fbbf24 !important;
-    padding: 8px 12px !important;
-    font-size: 10px !important;
-    line-height: 1.6 !important;
-  }
-
-  /* Discrepancy table */
-  .disc-sig-yes { background: rgba(254,226,226,0.6) !important; }
-  .disc-sig-no { background: rgba(209,250,229,0.6) !important; }
-
-  /* Strengths/Weaknesses */
-  .sw-card { padding: 8px !important; border-radius: 6px !important; }
 }
 
 
