@@ -634,11 +634,14 @@ function montarRelatorio(data) {
     <div class="rpt-hdr">
       <div class="deco1"></div><div class="deco2"></div>
       <div class="rpt-hdr-inner">
-        <div>
-          <div class="kicker">Relatório Neuropsicológico</div>
-          <div class="title">WAIS-III</div>
-          <div class="subtitle">Escala Wechsler de Inteligência para Adultos — 3ª Edição</div>
-          <div class="sub2">Conversão PB → Ponderado e somatórios por índice</div>
+        <div style="display:flex;align-items:center;gap:16px">
+          <img class="hdr-logo" src="/Equilibrium_Neuro2/logo2.png" alt="Logo" onerror="this.style.display='none'">
+          <div>
+            <div class="kicker">Relatório Neuropsicológico</div>
+            <div class="title">WAIS-III</div>
+            <div class="subtitle">Escala Wechsler de Inteligência para Adultos — 3ª Edição</div>
+            <div class="sub2">Conversão PB → Ponderado e somatórios por índice</div>
+          </div>
         </div>
         <div class="rpt-hdr-badge">
           <div class="lbl">Faixa Normativa</div>
