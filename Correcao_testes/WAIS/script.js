@@ -413,12 +413,13 @@ async function calcular(salvar) {
     hideLoading();
 
     if (salvar) {
-      // Salvar: abre modal e já dispara print
       openReportModal();
-      await new Promise(r => setTimeout(r, 400));
-      window.print();
+      // Notifica que salvou — o botão "Imprimir" no modal fica disponível
+      setTimeout(() => {
+        const toolbar = document.querySelector(".toolbar-title");
+        if (toolbar) toolbar.textContent = "📄 Relatório Gerado — Laudo salvo com sucesso!";
+      }, 100);
     } else {
-      // Somente calcular: abre modal para visualizar
       openReportModal();
     }
 
