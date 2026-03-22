@@ -312,7 +312,8 @@ function openReportModal() {
       <div class="report-modal-toolbar no-print">
         <div class="toolbar-title">📄 Relatório Gerado</div>
         <div class="toolbar-actions">
-          <button class="toolbar-btn toolbar-btn-primary" onclick="imprimirRelatorio()">🖨️ Imprimir / Salvar PDF</button>
+          <button class="toolbar-btn toolbar-btn-primary" onclick="baixarPDF()">📥 Baixar PDF</button>
+          <button class="toolbar-btn toolbar-btn-secondary" onclick="window.print()">🖨️ Imprimir</button>
           <button class="toolbar-btn toolbar-btn-secondary" onclick="closeReportModal()">✕ Fechar</button>
         </div>
       </div>
@@ -755,11 +756,38 @@ async function baixarPDFSalvo(index) {
   temp.remove();
 }
 
-async function imprimirRelatorio() {
+async function baixarPDF() {
   const rel = document.getElementById("relatorio");
   if (!rel) return;
   await esperarImagensCarregarem(rel);
-  await new Promise(r => setTimeout(r, 250));
+
+  // Pegar nome do paciente para nome do arquivo
+  const nome = rel.querySelector('.rpt-info .val.bold')?.textContent || 'Relatorio';
+  const nomeArquivo = 'WAIS-III_' + nome.replace(/\s+/g, '_').substring(0, 30) + '.pdf';
+
+  // Mostrar loading
+  showLoading("Gerando PDF...");
+
+  try {
+    const opt = {
+      margin: [5, 5, 5, 5],
+      filename: nomeArquivo,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
+      jsPDF: { unit: 'mm', format: [210, 900], orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all'] }
+    };
+
+    await html2pdf().set(opt).from(rel).save();
+  } catch(e) {
+    console.error("Erro ao gerar PDF:", e);
+    alert("Erro ao gerar PDF. Tente novamente.");
+  } finally {
+    hideLoading();
+  }
+}
+
+async function imprimirRelatorio() {
   window.print();
 }
 
@@ -774,6 +802,7 @@ async function imprimirRelatorio() {
 
 window.calcular = calcular;
 window.imprimirRelatorio = imprimirRelatorio;
+window.baixarPDF = baixarPDF;
 window.baixarPDFSalvo = baixarPDFSalvo;
 window.closeReportModal = closeReportModal;
 window.openReportModal = openReportModal;
