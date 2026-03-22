@@ -267,6 +267,156 @@
 /* ═══════════════════════════════════════════════
    PRINT — A4 Portrait, documento clínico
    ═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   LOADING OVERLAY
+   ═══════════════════════════════════════════════ */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeInOverlay 0.3s ease forwards;
+}
+
+@keyframes fadeInOverlay {
+  to { opacity: 1; }
+}
+
+.loading-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 40px 48px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  max-width: 340px;
+}
+
+.loading-spinner {
+  width: 48px; height: 48px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #0d47a1;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.loading-sub {
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* ═══════════════════════════════════════════════
+   REPORT MODAL
+   ═══════════════════════════════════════════════ */
+.report-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+  animation: fadeInOverlay 0.25s ease forwards;
+}
+
+.report-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 1100px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+  position: relative;
+  margin: 0 auto;
+  animation: slideUpModal 0.3s ease forwards;
+}
+
+@keyframes slideUpModal {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.report-modal-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: #f8fafc;
+  border-radius: 16px 16px 0 0;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.report-modal-toolbar .toolbar-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.report-modal-toolbar .toolbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.toolbar-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  transition: all 0.15s;
+}
+
+.toolbar-btn-primary {
+  background: #0d47a1;
+  color: #fff;
+}
+.toolbar-btn-primary:hover { background: #0b3d91; }
+
+.toolbar-btn-secondary {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+.toolbar-btn-secondary:hover { background: #e2e8f0; }
+
+.toolbar-btn-close {
+  background: none;
+  color: #94a3b8;
+  font-size: 22px;
+  padding: 4px 10px;
+  line-height: 1;
+}
+.toolbar-btn-close:hover { color: #ef4444; }
+
+.report-modal-body {
+  padding: 0;
+  overflow: visible;
+}
+
+/* ═══════════════════════════════════════════════
+   PRINT — A4 Portrait, documento clínico
+   ═══════════════════════════════════════════════ */
 @media print {
   @page {
     size: A4 portrait;
@@ -281,16 +431,30 @@
   body { background: #fff !important; }
   body * { visibility: hidden !important; }
 
+  /* Show modal report content when printing */
+  .report-modal-body, .report-modal-body *,
   #relatorio, #relatorio * { visibility: visible !important; }
 
-  #relatorio {
+  .report-modal-body, #relatorio {
     position: absolute;
     left: 0; top: 0;
     width: 100%;
   }
 
-  .sidebar, .page-header, .form-card, .action-row, .no-print {
+  /* Hide everything non-report */
+  .sidebar, .page-header, .form-card, .action-row, .no-print,
+  .report-modal-toolbar, .report-modal-backdrop, .loading-overlay {
     display: none !important;
+  }
+
+  .report-modal {
+    position: absolute !important;
+    left: 0 !important; top: 0 !important;
+    width: 100% !important; max-width: 100% !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .main-content {
