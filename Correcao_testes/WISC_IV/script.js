@@ -178,6 +178,46 @@ function atualizarPreviewIdade() {
 }
 
 /* ═══ CALCULAR ═══ */
+/* ═══════════════════════════════════
+   LOADING OVERLAY + MODAL
+   ═══════════════════════════════════ */
+function showLoading(msg) {
+  const overlay = document.createElement("div");
+  overlay.id = "loadingOverlay";
+  overlay.className = "loading-overlay";
+  overlay.innerHTML = `<div class="loading-card"><div class="loading-spinner"></div><div class="loading-title">${msg || "Gerando relatório..."}</div><div class="loading-sub">Conectando com a API e processando dados</div></div>`;
+  document.body.appendChild(overlay);
+}
+
+function hideLoading() { const el = document.getElementById("loadingOverlay"); if (el) el.remove(); }
+
+function openReportModal() {
+  const rel = document.getElementById("relatorio"); if (!rel) return;
+  closeReportModal();
+  const backdrop = document.createElement("div");
+  backdrop.id = "reportModal";
+  backdrop.className = "report-modal-backdrop";
+  backdrop.innerHTML = `<div class="report-modal"><div class="report-modal-toolbar no-print"><div class="toolbar-title">📄 Relatório Gerado</div><div class="toolbar-actions"><button class="toolbar-btn toolbar-btn-primary" onclick="imprimirRelatorio()">🖨️ Imprimir / Salvar PDF</button><button class="toolbar-btn toolbar-btn-secondary" onclick="closeReportModal()">✕ Fechar</button></div></div><div class="report-modal-body" id="reportModalBody"></div></div>`;
+  document.body.appendChild(backdrop);
+  document.getElementById("reportModalBody").appendChild(rel);
+  rel.style.display = "block";
+  backdrop.addEventListener("click", function(e) { if (e.target === backdrop) closeReportModal(); });
+  document.addEventListener("keydown", _escHandler);
+}
+
+function _escHandler(e) { if (e.key === "Escape") closeReportModal(); }
+
+function closeReportModal() {
+  const modal = document.getElementById("reportModal"); if (!modal) return;
+  const rel = document.getElementById("relatorio");
+  if (rel) { const main = document.querySelector(".main-content"); if (main) main.appendChild(rel); rel.style.display = "none"; }
+  modal.remove();
+  document.removeEventListener("keydown", _escHandler);
+}
+
+/* ═══════════════════════════════════
+   CALCULAR — com loading + modal
+   ═══════════════════════════════════ */
 async function calcular(salvar) {
   try {
     const nome = (document.getElementById("nome")?.value || "").trim();
@@ -201,6 +241,8 @@ async function calcular(salvar) {
     for (const s of SUBTESTES) { const v = document.getElementById(s.id)?.value; if (v !== "" && v != null) { const b = Number(v); if (Number.isNaN(b) || b < 0) { alert(`Valor inválido em ${s.nome}`); return; } brutos[s.codigo] = b; } }
     if (!Object.keys(brutos).length) { alert("Preencha ao menos um subteste."); return; }
 
+    showLoading(salvar ? "Salvando e gerando relatório..." : "Calculando resultados...");
+
     const API_URL = "https://equilibrium-api-yjxx.onrender.com/wisc/calcular";
     const response = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nasc, apl, brutos }) });
     const data = await response.json();
@@ -214,9 +256,20 @@ async function calcular(salvar) {
       await esperarImagensCarregarem(rel); await new Promise(r => setTimeout(r, 150));
       const laudos = getLaudos();
       laudos.unshift({ nome, dataAplicacao: apl, faixa, createdAt: new Date().toISOString(), htmlRelatorio: rel.outerHTML });
-      setLaudos(laudos); alert("Laudo salvo!");
+      setLaudos(laudos);
     }
-  } catch (e) { console.error(e); alert(`Erro ao calcular: ${e.message}`); }
+
+    hideLoading();
+
+    if (salvar) {
+      openReportModal();
+      await new Promise(r => setTimeout(r, 400));
+      window.print();
+    } else {
+      openReportModal();
+    }
+
+  } catch (e) { hideLoading(); console.error(e); alert(`Erro ao calcular: ${e.message}`); }
 }
 
 /* ═══ CHART.JS ═══ */
@@ -373,4 +426,4 @@ async function imprimirRelatorio() { const rel = document.getElementById("relato
   if (document.getElementById("listaLaudos")) renderListaLaudos();
 })();
 
-window.calcular = calcular; window.imprimirRelatorio = imprimirRelatorio; window.baixarPDFSalvo = baixarPDFSalvo;
+window.calcular = calcular; window.imprimirRelatorio = imprimirRelatorio; window.baixarPDFSalvo = baixarPDFSalvo; window.closeReportModal = closeReportModal; window.openReportModal = openReportModal;
