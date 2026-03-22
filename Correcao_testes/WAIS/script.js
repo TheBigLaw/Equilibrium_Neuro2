@@ -761,20 +761,23 @@ async function baixarPDF() {
   if (!rel) return;
   await esperarImagensCarregarem(rel);
 
-  // Pegar nome do paciente para nome do arquivo
   const nome = rel.querySelector('.rpt-info .val.bold')?.textContent || 'Relatorio';
   const nomeArquivo = 'WAIS-III_' + nome.replace(/\s+/g, '_').substring(0, 30) + '.pdf';
 
-  // Mostrar loading
   showLoading("Gerando PDF...");
 
   try {
+    // Medir altura real do conteúdo e converter px → mm
+    const h = rel.scrollHeight;
+    const pxToMm = 25.4 / 96;
+    const pdfH = Math.ceil(h * pxToMm) + 15;
+
     const opt = {
-      margin: [5, 5, 5, 5],
+      margin: [0, 0, 0, 0],
       filename: nomeArquivo,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
-      jsPDF: { unit: 'mm', format: [210, 900], orientation: 'portrait' },
+      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0, windowWidth: rel.scrollWidth },
+      jsPDF: { unit: 'mm', format: [210, pdfH], orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all'] }
     };
 
