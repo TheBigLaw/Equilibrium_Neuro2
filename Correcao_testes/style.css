@@ -27,6 +27,7 @@
 .rpt-hdr{background:linear-gradient(135deg,#0c1f3f 0%,#1a3a6a 50%,#1e40af 100%);color:#fff;padding:30px 36px 26px;position:relative;overflow:hidden}
 .rpt-hdr .deco1{position:absolute;top:-50px;right:-50px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.03)}
 .rpt-hdr .deco2{position:absolute;bottom:-30px;left:40%;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.02)}
+.rpt-hdr .hdr-logo{width:40px;height:40px;object-fit:contain;filter:brightness(10);flex-shrink:0}
 .rpt-hdr-inner{display:flex;justify-content:space-between;align-items:flex-start;position:relative}
 .rpt-hdr .kicker{font-size:10px;text-transform:uppercase;letter-spacing:4px;opacity:.45}
 .rpt-hdr .title{font-size:28px;font-weight:800;margin-top:6px;letter-spacing:-.5px}
@@ -164,7 +165,7 @@
 
 /* ═══ PRINT ═══ */
 @media print{
-  @page{size:A4 portrait;margin:8mm 10mm}
+  @page{size:A4 portrait;margin:6mm 8mm}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   body{background:#fff!important;margin:0!important;padding:0!important}
   .sidebar,.page-header,.form-card,.action-row,.no-print,.report-modal-toolbar,.loading-overlay,.app-shell{display:none!important}
@@ -172,41 +173,92 @@
   .report-modal{position:static!important;width:100%!important;max-width:100%!important;box-shadow:none!important;border-radius:0!important;margin:0!important;padding:0!important;background:#fff!important}
   .report-modal-body{max-height:none!important;overflow:visible!important;padding:0!important}
   #relatorio{display:block!important}
-  .report{border:none!important;box-shadow:none!important;margin:0!important;overflow:visible!important;border-radius:0!important}
+  .report{border:none!important;box-shadow:none!important;margin:0!important;overflow:visible!important;border-radius:0!important;
+    transform:scale(0.82)!important;transform-origin:top left!important;width:121.95%!important}
   .main-content{margin:0!important;padding:0!important;max-width:100%!important}
-  .rpt-hdr{border-radius:0!important;padding:18px 24px 16px!important}
-  .rpt-hdr .title{font-size:22px!important}
-  .rpt-body{padding:0 24px 24px!important}
-  .rpt-sh{margin-top:18px!important;margin-bottom:10px!important;break-after:avoid!important;page-break-after:avoid!important}
-  .rpt-sh .num{width:22px!important;height:22px!important;font-size:10px!important}
-  .rpt-sh .sh-title{font-size:12px!important}
-  .rpt-box,.rpt-box-obs{padding:10px 14px!important}
-  .rpt-info{gap:4px 20px!important;font-size:11px!important}
-  .rpt-info .lbl{font-size:9px!important}
-  .rpt-info .val{font-size:11px!important}
-  .rpt-tbl th,.rpt-tbl td{padding:4px 6px!important;font-size:10px!important}
-  .rpt-tbl th{font-size:8px!important}
-  .rpt-matrix th,.rpt-matrix td{padding:3px 4px!important;font-size:9px!important}
-  .rpt-matrix .sub-name{min-width:80px!important}
-  .rpt-matrix .pill{font-size:9px!important;padding:1px 5px!important}
-  .bar-row{margin-bottom:2px!important}
-  .bar-track{height:16px!important}
-  .bar-group-title{font-size:8px!important;margin-bottom:4px!important}
-  .bar-code{font-size:8px!important;width:22px!important}
-  .bar-val{font-size:9px!important}
-  .ic-row{margin-bottom:5px!important}
-  .ic-track{height:22px!important}
-  .ic-label{font-size:8px!important}
-  .ic-dot{width:14px!important;height:14px!important;transform:translate(-7px,-7px)!important;font-size:7px!important}
-  .sw-row{gap:8px!important}
-  .sw-card{padding:10px!important}
-  .sw-card h4{font-size:10px!important}
-  .sw-item{font-size:10px!important;padding:4px 8px!important}
-  .rpt-interp{font-size:11px!important;line-height:1.7!important}
-  .rpt-interp p{margin-bottom:8px!important}
-  .rpt-rec{font-size:11px!important;line-height:1.6!important}
-  .rpt-foot{margin-top:20px!important;padding-top:14px!important}
-  .cl-badge{font-size:8px!important;padding:1px 5px!important}
+
+  /* Header compacto */
+  .rpt-hdr{border-radius:0!important;padding:12px 16px 10px!important}
+  .rpt-hdr .kicker{font-size:8px!important;letter-spacing:3px!important}
+  .rpt-hdr .title{font-size:18px!important;margin-top:3px!important}
+  .rpt-hdr .subtitle{font-size:10px!important}
+  .rpt-hdr .sub2{font-size:9px!important}
+  .rpt-hdr-badge{padding:6px 10px!important}
+  .rpt-hdr-badge .val{font-size:16px!important}
+  .rpt-hdr-badge .lbl{font-size:7px!important}
+  .rpt-hdr-badge .sub{font-size:8px!important}
+  .rpt-hdr .hdr-logo{width:28px!important;height:28px!important}
+
+  /* Body sem padding grande */
+  .rpt-body{padding:0 16px 16px!important}
+
+  /* Section headers — SEM espaço extra */
+  .rpt-sh{margin-top:10px!important;margin-bottom:6px!important;break-after:avoid!important;page-break-after:avoid!important}
+  .rpt-sh .num{width:18px!important;height:18px!important;font-size:9px!important;border-radius:4px!important}
+  .rpt-sh .sh-title{font-size:11px!important}
+  .rpt-sh .sh-sub{font-size:8px!important}
+  .rpt-sh .sh-new{font-size:8px!important;padding:1px 5px!important}
+
+  /* Boxes compactos */
+  .rpt-box{padding:8px 12px!important;border-radius:6px!important}
+  .rpt-box-obs{padding:6px 10px!important;font-size:10px!important;line-height:1.5!important;border-radius:6px!important}
+
+  /* Info grid compacto */
+  .rpt-info{gap:2px 16px!important;font-size:10px!important}
+  .rpt-info .lbl{font-size:8px!important}
+  .rpt-info .val{font-size:10px!important}
+  .rpt-info .sep{margin:2px 0!important}
+
+  /* Tabelas */
+  .rpt-tbl th,.rpt-tbl td{padding:3px 5px!important;font-size:9px!important}
+  .rpt-tbl th{font-size:7.5px!important;padding:4px 5px!important}
+
+  /* Matriz */
+  .rpt-matrix th,.rpt-matrix td{padding:2px 3px!important;font-size:8px!important}
+  .rpt-matrix .sub-name{min-width:70px!important;font-size:8px!important}
+  .rpt-matrix .pill{font-size:8px!important;padding:1px 4px!important;border-radius:4px!important}
+  .rpt-matrix tfoot td{font-size:9px!important}
+
+  /* Barras — compactas */
+  .bar-row{margin-bottom:1px!important}
+  .bar-track{height:14px!important}
+  .bar-group-title{font-size:7px!important;margin-bottom:3px!important;padding-left:24px!important}
+  .bar-code{font-size:7px!important;width:20px!important}
+  .bar-val{font-size:8px!important;width:18px!important}
+  .bar-badge{width:45px!important}
+  .bar-badge .cl-badge{font-size:7px!important;padding:1px 4px!important}
+
+  /* IC chart compacto */
+  .ic-row{margin-bottom:3px!important}
+  .ic-track{height:18px!important;border-radius:4px!important}
+  .ic-label{font-size:7px!important;width:24px!important}
+  .ic-dot{width:12px!important;height:12px!important;transform:translate(-6px,-6px)!important;font-size:6px!important}
+  .ic-scale{font-size:7px!important;padding:0 28px!important}
+  .ic-legend{font-size:7px!important}
+  .ic-badge{width:55px!important}
+  .ic-badge .cl-badge{font-size:7px!important;padding:1px 4px!important}
+
+  /* SW cards */
+  .sw-row{gap:6px!important}
+  .sw-card{padding:6px 8px!important;border-radius:6px!important}
+  .sw-card h4{font-size:9px!important;margin-bottom:4px!important}
+  .sw-item{font-size:8px!important;padding:3px 6px!important;margin-bottom:3px!important;border-radius:4px!important}
+
+  /* Interpretação */
+  .rpt-interp{font-size:9.5px!important;line-height:1.55!important}
+  .rpt-interp p{margin-bottom:6px!important}
+  .rpt-rec{font-size:9.5px!important;line-height:1.5!important}
+
+  /* Footer */
+  .rpt-foot{margin-top:12px!important;padding-top:10px!important}
+  .rpt-foot .sign-line{margin-top:8px!important;font-size:8px!important}
+  .rpt-foot-right{font-size:9px!important}
+  .rpt-foot-disclaimer{font-size:7px!important}
+
+  /* Badges */
+  .cl-badge{font-size:7px!important;padding:1px 4px!important}
+
+  /* Break control */
   .no-break{break-inside:avoid!important;page-break-inside:avoid!important}
   .rpt-hdr{break-inside:avoid!important;page-break-inside:avoid!important}
 }
