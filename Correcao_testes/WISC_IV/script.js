@@ -331,20 +331,22 @@ function montarRelatorio(data) {
   const fortesHtml = fortes.length === 0 ? `<div class="muted">Nenhum desvio ≥3 positivo</div>` : fortes.map(s => `<div style="margin-bottom:4px;"><b>${s.nome}</b> (${s.cod}) — ponderado ${s.p} — desvio +${(s.p - media).toFixed(1)}</div>`).join("");
   const fracosHtml = fracos.length === 0 ? `<div class="muted">Nenhum desvio ≥3 negativo</div>` : fracos.map(s => `<div style="margin-bottom:4px;"><b>${s.nome}</b> (${s.cod}) — ponderado ${s.p} — desvio ${(s.p - media).toFixed(1)}</div>`).join("");
 
+  const indicesRows = [["ICV","ICV"],["IOP","IOP"],["IMO","IMO"],["IVP","IVP"],["QIT","QI_TOTAL"]].map(([rotulo, chave]) => {
+    const s = somas?.[chave]; const c = compostos?.[chave]; const cls = c?.composto ? classByComposite(c.composto) : "—";
+    return `<tr><td><b>${rotulo}</b></td><td>${s?.soma ?? "—"}</td><td style="font-weight:800;">${c?.composto ?? "—"}</td><td>${c?.percentil ?? "—"}</td><td>${fmtIC(c?.ic90)}</td><td>${fmtIC(c?.ic95)}</td><td>${cls}</td></tr>`;
+  }).join("");
+
   rel.style.display = "block";
   rel.innerHTML = `
     <div class="report">
-      <div class="report-header">
-        <img class="report-logo report-logo-top" src="/Equilibrium_Neuro2/logo2.png" alt="Logo" onerror="this.style.display='none'">
-        <div class="report-title">
-          <div class="t1">Relatório Neuropsicológico — WISC-IV</div>
-          <div class="t2">Escala Wechsler de Inteligência para Crianças — 4ª Edição</div>
-        </div>
-        <div class="report-meta"><div class="badge">Faixa: ${faixa}</div><div class="muted">Idade: ${idade.anos}a ${idade.meses}m</div></div>
+      <div class="rpt-header">
+        <img src="/Equilibrium_Neuro2/logo2.png" alt="Logo" onerror="this.style.display='none'">
+        <div class="rpt-header-text"><div class="h1">Relatório Neuropsicológico — WISC-IV</div><div class="h2">Escala Wechsler de Inteligência para Crianças — 4ª Edição</div></div>
+        <div class="rpt-header-meta"><div class="badge">Faixa: ${faixa}</div><div class="sub">Idade: ${idade.anos}a ${idade.meses}m</div></div>
       </div>
 
-      <div class="section">
-        <h3>1. Identificação</h3>
+      <div class="rpt-section no-break">
+        <div class="rpt-stitle theme-blue"><span class="num">1</span><span class="txt">Identificação</span></div>
         <div class="info-grid">
           <div><span class="k">Nome:</span> <span class="v">${nome}</span></div>
           <div><span class="k">CPF:</span> <span class="v">${cpfTxt || "—"}</span></div>
@@ -353,61 +355,55 @@ function montarRelatorio(data) {
           <div><span class="k">Nascimento:</span> <span class="v">${formatarData(nasc)} (${idade.anos}a ${idade.meses}m)</span></div>
           <div><span class="k">Aplicação:</span> <span class="v">${formatarData(apl)}</span></div>
         </div>
-        ${profNome ? `<div style="border-top:1px dashed rgba(13,71,161,.15);margin-top:10px;padding-top:10px;" class="info-grid">
+        ${profNome ? `<div style="border-top:1px dashed #cbd5e1;margin-top:10px;padding-top:10px;" class="info-grid">
           <div><span class="k">Profissional:</span> <span class="v">${profNome}${profCRP ? ` — ${profCRP}` : ""}</span></div>
           <div><span class="k">Especialidade:</span> <span class="v">${profEspecialidade || "—"}</span></div>
         </div>` : ""}
-        ${motivo ? `<div style="border-top:1px dashed rgba(13,71,161,.15);margin-top:10px;padding-top:10px;"><span class="k">Motivo do encaminhamento:</span> <span class="v">${motivo}</span></div>` : ""}
+        ${motivo ? `<div style="border-top:1px dashed #cbd5e1;margin-top:10px;padding-top:10px;"><span class="k">Motivo:</span> <span class="v">${motivo}</span></div>` : ""}
       </div>
 
-      ${obsComportamentais ? `<div class="section no-break"><h3>2. Observações Comportamentais</h3>
-        <div style="background:#fffbeb;border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:12px 16px;font-size:12px;line-height:1.7;color:#334155;">${obsComportamentais}</div></div>` : ""}
+      ${obsComportamentais ? `<div class="rpt-section no-break"><div class="rpt-stitle theme-amber"><span class="num">2</span><span class="txt">Observações Comportamentais</span></div><div class="rpt-obs">${obsComportamentais}</div></div>` : ""}
 
-      <div class="duas-colunas">
-        <div class="section no-break"><h3>3. Conversão PB → Ponderado</h3><div class="matrix-card">${matriz}</div><p class="muted" style="margin:10px 0 0;">Células azuis = subtestes usados na soma.</p></div>
-        <div class="section no-break"><h3>4. Perfil dos Subtestes</h3><div class="perfil-card">${perfil}<div class="canvas-wrap perfil-canvas"><canvas id="grafSub" height="560"></canvas></div></div></div>
+      <div class="rpt-cols">
+        <div class="rpt-section no-break"><div class="rpt-stitle theme-teal"><span class="num">3</span><span class="txt">Conversão PB → Ponderado</span></div><div class="matrix-card">${matriz}</div><p class="muted" style="margin:6px 0 0;font-size:10px;">Células azuis = subtestes usados. Parênteses = suplementares.</p></div>
+        <div class="rpt-section no-break"><div class="rpt-stitle theme-indigo"><span class="num">4</span><span class="txt">Perfil dos Subtestes</span></div><div class="perfil-card">${perfil}<div class="canvas-wrap perfil-canvas"><canvas id="grafSub" height="480"></canvas></div></div></div>
       </div>
 
-      <div class="duas-colunas">
-        <div class="section no-break"><h3>5. Subtestes — Detalhamento</h3>
-          <table class="table"><thead><tr><th>Subteste</th><th>PB</th><th>Pond.</th><th>Classificação</th><th>Desvio MP</th></tr></thead>
+      <div class="rpt-cols rpt-page-break">
+        <div class="rpt-section no-break"><div class="rpt-stitle theme-purple"><span class="num">5</span><span class="txt">Subtestes — Detalhamento</span></div>
+          <table class="rpt-table"><thead><tr><th>Subteste</th><th>PB</th><th>Pond.</th><th>Classificação</th><th>Desvio MP</th></tr></thead>
           <tbody>${detalheRows}</tbody>
-          <tfoot><tr><td colspan="4" style="font-weight:700;color:#0d47a1;">Média pessoal</td><td style="font-weight:800;color:#0d47a1;text-align:center;">${media.toFixed(1)}</td></tr></tfoot></table>
+          <tfoot><tr><td colspan="4" style="color:#0d47a1;">Média pessoal</td><td style="font-weight:800;color:#0d47a1;text-align:center;">${media.toFixed(1)}</td></tr></tfoot></table>
         </div>
-        <div class="section no-break"><h3>6. Índices e QI Total</h3>
-          <table class="table" style="margin-top:12px;"><thead><tr><th>Escala</th><th>Soma</th><th>Composto</th><th>Percentil</th><th>IC 90%</th><th>IC 95%</th><th>Classif.</th></tr></thead>
-          <tbody>${[["ICV","ICV"],["IOP","IOP"],["IMO","IMO"],["IVP","IVP"],["QIT","QI_TOTAL"]].map(([rotulo, chave]) => {
-            const s = somas?.[chave]; const c = compostos?.[chave]; const cls = c?.composto ? classByComposite(c.composto) : "—";
-            return `<tr><td><b>${rotulo}</b></td><td>${s?.soma ?? "—"}</td><td style="font-weight:800;">${c?.composto ?? "—"}</td><td>${c?.percentil ?? "—"}</td><td>${fmtIC(c?.ic90)}</td><td>${fmtIC(c?.ic95)}</td><td style="font-size:10px;">${cls}</td></tr>`;
-          }).join("")}</tbody></table>
+        <div class="rpt-section no-break"><div class="rpt-stitle theme-sky"><span class="num">6</span><span class="txt">Índices e QI Total</span></div>
+          <table class="rpt-table"><thead><tr><th>Escala</th><th>Soma</th><th>Composto</th><th>Percentil</th><th>IC 90%</th><th>IC 95%</th><th>Classif.</th></tr></thead>
+          <tbody>${indicesRows}</tbody></table>
         </div>
       </div>
 
-      <div class="section no-break"><h3>7. Análise de Discrepâncias entre Índices</h3>
-        <table class="table"><thead><tr><th>Comparação</th><th style="text-align:center">Índ. 1</th><th style="text-align:center">Índ. 2</th><th style="text-align:center">Diferença</th><th style="text-align:center">Val. Crítico (.05)</th><th style="text-align:center">Significativo?</th></tr></thead>
+      <div class="rpt-section no-break"><div class="rpt-stitle theme-rose"><span class="num">7</span><span class="txt">Análise de Discrepâncias</span></div>
+        <table class="rpt-table"><thead><tr><th>Comparação</th><th style="text-align:center">Índ. 1</th><th style="text-align:center">Índ. 2</th><th style="text-align:center">Diferença</th><th style="text-align:center">Val. Crítico (.05)</th><th style="text-align:center">Significativo?</th></tr></thead>
         <tbody>${discRows}</tbody></table>
-        <p class="muted" style="margin:8px 0 0;">Valores críticos: Manual WISC-IV. 🟢 Não significativo · 🟡 Notável (≥8) · 🔴 Significativo (p < .05)</p>
+        <p class="muted" style="margin:6px 0 0;font-size:10px;">Manual WISC-IV. 🟢 Não significativo · 🟡 Notável (≥8) · 🔴 Significativo (p < .05)</p>
       </div>
 
-      <div class="section no-break"><h3>8. Pontos Fortes e Fracos Pessoais</h3>
+      <div class="rpt-section no-break"><div class="rpt-stitle theme-emerald"><span class="num">8</span><span class="txt">Pontos Fortes e Fracos</span></div>
         <p class="muted" style="margin-bottom:8px;">Média pessoal: <b style="color:#0d47a1">${media.toFixed(1)}</b> · Desvio ≥ 3 = significativo</p>
-        <div style="display:flex;gap:12px;">
-          <div style="flex:1;background:rgba(209,250,229,0.4);border:1px solid rgba(5,150,105,0.2);border-radius:10px;padding:12px;">
-            <div style="font-weight:800;color:#065f46;margin-bottom:6px;">▲ Pontos Fortes</div><div style="font-size:12px;color:#065f46;">${fortesHtml}</div></div>
-          <div style="flex:1;background:rgba(254,226,226,0.4);border:1px solid rgba(220,38,38,0.2);border-radius:10px;padding:12px;">
-            <div style="font-weight:800;color:#991b1b;margin-bottom:6px;">▼ Pontos Fracos</div><div style="font-size:12px;color:#991b1b;">${fracosHtml}</div></div>
+        <div class="sw-row">
+          <div class="sw-card sw-card-strong"><h4>▲ Pontos Fortes</h4><div class="items">${fortesHtml}</div></div>
+          <div class="sw-card sw-card-weak"><h4>▼ Pontos Fracos</h4><div class="items">${fracosHtml}</div></div>
         </div>
       </div>
 
-      <div class="section no-break"><h3>9. Interpretação Clínica</h3>${textoInterp.split("\n\n").map(p => `<p class="interp">${p}</p>`).join("")}</div>
+      <div class="rpt-section"><div class="rpt-stitle theme-orange"><span class="num">9</span><span class="txt">Interpretação Clínica</span></div>${textoInterp.split("\n\n").map(p => `<p class="interp">${p}</p>`).join("")}</div>
 
-      ${recomendacoes ? `<div class="section no-break"><h3>10. Conclusão e Recomendações</h3><div style="font-size:12px;line-height:1.7;color:#334155;white-space:pre-line;">${recomendacoes}</div></div>` : ""}
+      ${recomendacoes ? `<div class="rpt-section no-break"><div class="rpt-stitle theme-slate"><span class="num">10</span><span class="txt">Conclusão e Recomendações</span></div><div style="font-size:12px;line-height:1.7;color:#334155;white-space:pre-line;">${recomendacoes}</div></div>` : ""}
 
-      <div class="report-footer">
-        <div>${profNome ? `<div style="font-weight:700;color:#0f172a;">${profNome}</div><div class="muted">${profCRP || ""}${profEspecialidade ? ` · ${profEspecialidade}` : ""}</div><div style="margin-top:12px;border-top:1px solid #0f172a;width:180px;padding-top:4px;font-size:9px;color:#94a3b8;">Assinatura do profissional</div>` : `<div class="muted">Documento gerado automaticamente</div>`}</div>
-        <div style="display:flex;align-items:center;gap:10px;"><button class="btn-print no-print" onclick="imprimirRelatorio()">Imprimir (PDF)</button><img class="report-logo report-logo-bottom" src="/Equilibrium_Neuro2/logo2.png" alt="Logo" onerror="this.style.display='none'"></div>
+      <div class="rpt-footer">
+        <div>${profNome ? `<div style="font-weight:800;font-size:14px;color:#0f172a;">${profNome}</div><div style="font-size:11px;color:#64748b;">${profCRP || ""}${profEspecialidade ? ` · ${profEspecialidade}` : ""}</div><div class="sign">Assinatura do profissional</div>` : `<div class="muted">Documento gerado automaticamente</div>`}</div>
+        <div style="display:flex;align-items:center;gap:10px;"><button class="btn-print no-print" onclick="imprimirRelatorio()">🖨️ Imprimir</button><img src="/Equilibrium_Neuro2/logo2.png" alt="" style="width:34px;height:34px;object-fit:contain;" onerror="this.style.display='none'"></div>
       </div>
-      ${profNome ? `<div style="text-align:center;padding:6px;font-size:8px;color:#cbd5e1;">Este documento é confidencial e destinado exclusivamente ao profissional solicitante.</div>` : ""}
+      ${profNome ? `<div class="rpt-disclaimer">Este documento é confidencial e destinado exclusivamente ao profissional solicitante.</div>` : ""}
     </div>`;
   desenharGraficos(resultados);
 }
