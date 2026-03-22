@@ -17,11 +17,11 @@
         <div><div class="brand-name">Equilibrium</div><div class="brand-sub">Neuropsicologia</div></div>
       </div>
       <nav class="sidebar-nav">
-        <a class="nav-item" href="/Equilibrium_Neuro2/index.html"><span class="nav-icon">📊</span><span>Dashboard</span></a>
+        <a class="nav-item" href="/Equilibrium_Neuro2/"><span class="nav-icon">📊</span><span>Dashboard</span></a>
         <a class="nav-item" href="/Equilibrium_Neuro2/#pacientes"><span class="nav-icon">👤</span><span>Pacientes</span></a>
         <a class="nav-item active" href="/Equilibrium_Neuro2/Correcao_testes/"><span class="nav-icon">✏️</span><span>Correção de Testes</span></a>
         <a class="nav-item" href="/Equilibrium_Neuro2/#relatorios"><span class="nav-icon">📄</span><span>Relatórios</span></a>
-        <a class="nav-item" href="/Equilibrium_Neuro2/#checklist"><span class="nav-icon">✅</span><span>Checklist</span></a>
+        <a class="nav-item" href="/Equilibrium_Neuro2/check_list/"><span class="nav-icon">✅</span><span>Checklist</span></a>
         <a class="nav-item" href="/Equilibrium_Neuro2/#config"><span class="nav-icon">⚙️</span><span>Configurações</span></a>
       </nav>
       <div class="sidebar-footer">
@@ -39,10 +39,39 @@
         <button class="btn-secondary" onclick="history.back()">← Voltar</button>
       </div>
 
-      <!-- CARD 1: Dados do examinando -->
+      <!-- CARD 1: Dados do Profissional -->
       <div class="form-card">
         <div class="form-card-header">
           <span class="form-card-num">1</span>
+          <div>
+            <div class="form-card-title">Dados do Profissional</div>
+            <div class="form-card-desc">Informações do aplicador — obrigatório para laudo</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="profNome">Nome do Profissional</label>
+            <input type="text" id="profNome" placeholder="Nome completo" />
+          </div>
+          <div class="field">
+            <label for="profCRP">CRP</label>
+            <input type="text" id="profCRP" placeholder="CRP XX/XXXXX" />
+          </div>
+          <div class="field">
+            <label for="profEspecialidade">Especialidade</label>
+            <input type="text" id="profEspecialidade" placeholder="Ex: Neuropsicóloga" />
+          </div>
+          <div class="field">
+            <label for="profContato">Contato</label>
+            <input type="text" id="profContato" placeholder="E-mail ou telefone" />
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: Dados do Examinando -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <span class="form-card-num">2</span>
           <div>
             <div class="form-card-title">Dados do Examinando</div>
             <div class="form-card-desc">Informações pessoais da criança/adolescente</div>
@@ -90,17 +119,21 @@
             </select>
           </div>
         </div>
+        <div class="field" style="margin-top:14px;">
+          <label for="motivo">Motivo do Encaminhamento</label>
+          <textarea id="motivo" rows="2" placeholder="Ex: Avaliação cognitiva para investigação de queixas de memória" style="width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--border);font-size:14px;font-family:inherit;outline:none;resize:vertical;"></textarea>
+        </div>
         <p id="idadeCalculada" class="form-hint"></p>
         <p id="faixaCalculada" class="form-hint"></p>
       </div>
 
-      <!-- CARD 2: Subtestes -->
+      <!-- CARD 3: Subtestes -->
       <div class="form-card">
         <div class="form-card-header">
-          <span class="form-card-num">2</span>
+          <span class="form-card-num">3</span>
           <div>
             <div class="form-card-title">Pontos Brutos dos Subtestes</div>
-            <div class="form-card-desc">15 subtestes (10 principais + 5 suplementares)</div>
+            <div class="form-card-desc">Informe os valores obtidos na aplicação (15 subtestes — 10 principais + 5 suplementares)</div>
           </div>
         </div>
         <div class="table-wrap">
@@ -116,7 +149,42 @@
         </div>
       </div>
 
-      <!-- CARD 3: Ações -->
+      <!-- CARD 4: Observações Comportamentais -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <span class="form-card-num">4</span>
+          <div>
+            <div class="form-card-title">Observações Comportamentais</div>
+            <div class="form-card-desc">Registros qualitativos durante a aplicação</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+          <button type="button" class="chip-btn" onclick="insertObs('Colaborativo(a) e engajado(a) durante toda a sessão')">Colaborativo</button>
+          <button type="button" class="chip-btn" onclick="insertObs('Sinais de fadiga a partir do 5º subteste')">Fadiga</button>
+          <button type="button" class="chip-btn" onclick="insertObs('Impulsividade nas respostas verbais')">Impulsividade</button>
+          <button type="button" class="chip-btn" onclick="insertObs('Ansiedade durante a aplicação')">Ansiedade</button>
+          <button type="button" class="chip-btn" onclick="insertObs('Necessitou de repetição frequente de instruções')">Repetição instruções</button>
+          <button type="button" class="chip-btn" onclick="insertObs('Boa compreensão das instruções')">Boa compreensão</button>
+          <button type="button" class="chip-btn" onclick="insertObs('Desatenção intermitente')">Desatenção</button>
+          <button type="button" class="chip-btn" onclick="insertObs('Estratégias organizadas de resolução')">Estratégias organizadas</button>
+          <button type="button" class="chip-btn" onclick="insertObs('Manteve contato visual adequado')">Contato visual ok</button>
+        </div>
+        <textarea id="obsComportamentais" rows="4" placeholder="Descreva o comportamento do examinando durante a aplicação..." style="width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--border);font-size:14px;font-family:inherit;outline:none;resize:vertical;"></textarea>
+      </div>
+
+      <!-- CARD 5: Recomendações -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <span class="form-card-num">5</span>
+          <div>
+            <div class="form-card-title">Conclusão e Recomendações</div>
+            <div class="form-card-desc">Sugestões terapêuticas, educacionais e encaminhamentos</div>
+          </div>
+        </div>
+        <textarea id="recomendacoes" rows="4" placeholder="Recomendações para o paciente, família ou equipe multidisciplinar..." style="width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--border);font-size:14px;font-family:inherit;outline:none;resize:vertical;"></textarea>
+      </div>
+
+      <!-- CARD 6: Ações -->
       <div class="form-card">
         <div class="action-row">
           <button class="btn-primary" onclick="calcular(true)">💾 Salvar e Gerar PDF</button>
@@ -124,7 +192,7 @@
         </div>
       </div>
 
-      <!-- RELATÓRIO -->
+      <!-- RELATÓRIO (aparece após calcular) -->
       <div id="relatorio" class="card report" style="display:none;"></div>
     </main>
   </div>
@@ -135,5 +203,25 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="/Equilibrium_Neuro2/Correcao_testes/WISC_IV/script.js"></script>
+
+  <script>
+    // Chip buttons para observações
+    function insertObs(text) {
+      const ta = document.getElementById("obsComportamentais");
+      if (!ta) return;
+      ta.value += (ta.value ? ". " : "") + text;
+      ta.focus();
+    }
+    window.insertObs = insertObs;
+  </script>
+
+  <style>
+    .chip-btn {
+      background: #ede9fe; color: #7c3aed; border: none; border-radius: 20px;
+      padding: 5px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .chip-btn:hover { background: #ddd6fe; }
+  </style>
 </body>
 </html>
