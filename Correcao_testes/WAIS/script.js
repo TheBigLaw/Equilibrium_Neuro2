@@ -766,9 +766,19 @@ async function baixarPDF() {
 
   showLoading("Gerando PDF...");
 
+  // Escalar a 85% para caber melhor no A4
+  const report = rel.querySelector('.report');
+  if (report) {
+    report.style.transform = 'scale(0.85)';
+    report.style.transformOrigin = 'top left';
+    report.style.width = '117.65%'; // 100/0.85
+  }
+
+  await new Promise(r => setTimeout(r, 200));
+
   try {
     await html2pdf().set({
-      margin: [5, 5, 5, 5],
+      margin: [4, 4, 4, 4],
       filename: nomeArquivo,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
@@ -778,6 +788,12 @@ async function baixarPDF() {
     console.error("Erro ao gerar PDF:", e);
     alert("Erro ao gerar PDF. Tente novamente.");
   } finally {
+    // Restaurar escala
+    if (report) {
+      report.style.transform = '';
+      report.style.transformOrigin = '';
+      report.style.width = '';
+    }
     hideLoading();
   }
 }
