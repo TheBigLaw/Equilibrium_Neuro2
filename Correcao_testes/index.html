@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Correção de Testes | Equilibrium</title>
-  <link rel="stylesheet" href="/Equilibrium_Neuro2/style.css" />
-  <link rel="icon" type="image/png" href="Equilibrium_Neuro2/logo.png" />
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon" type="image/png" href="/logo.png" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -14,7 +14,7 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar-brand">
-        <img src="/Equilibrium_Neuro2/logo2.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'" />
+        <img src="/logo2.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'" />
         <div>
           <div class="brand-name">Equilibrium</div>
           <div class="brand-sub">Neuropsicologia</div>
@@ -23,7 +23,7 @@
       <nav class="sidebar-nav">
         <a class="nav-item" href="/Equilibrium_Neuro2/i"><span class="nav-icon">📊</span><span>Dashboard</span></a>
         <a class="nav-item" href="/Equilibrium_Neuro2/#pacientes"><span class="nav-icon">👤</span><span>Pacientes</span></a>
-        <a class="nav-item active" href="/Equilibrium_Neuro2/Correcao_testes/"><span class="nav-icon">✏️</span><span>Correção de Testes</span></a>
+        <a class="nav-item active" href="/Correcao_testes/"><span class="nav-icon">✏️</span><span>Correção de Testes</span></a>
         <a class="nav-item" href="/Equilibrium_Neuro2/#relatorios"><span class="nav-icon">📄</span><span>Relatórios</span></a>
         <a class="nav-item" href="/Equilibrium_Neuro2/check_list/"><span class="nav-icon">✅</span><span>Checklist</span></a>
         <a class="nav-item" href="/Equilibrium_Neuro2/#config"><span class="nav-icon">⚙️</span><span>Configurações</span></a>
@@ -47,17 +47,17 @@
       </div>
 
       <div class="test-grid">
-        <div class="test-card" onclick="location.href='/Equilibrium_Neuro2/Correcao_testes/WAIS/index.html'">
+        <div class="test-card" onclick="location.href='/Correcao_testes/WAIS/index.html'">
           <div class="test-name" style="color: var(--blue)">WAIS-III</div>
           <div class="test-desc">Adultos (16-89 anos)</div>
           <div class="test-status"><span class="badge badge-green">Ativo</span></div>
         </div>
-        <div class="test-card" onclick="location.href='/Equilibrium_Neuro2/Correcao_testes/WISC_IV/index.html'">
+        <div class="test-card" onclick="location.href='/Correcao_testes/WISC_IV/index.html'">
           <div class="test-name" style="color: var(--green)">WISC-IV</div>
           <div class="test-desc">Crianças e adolescentes (6-16 anos)</div>
           <div class="test-status"><span class="badge badge-green">Ativo</span></div>
         </div>
-        <div class="test-card" onclick="location.href='/Equilibrium_Neuro2/Correcao_testes/SRS2/index.html'">
+        <div class="test-card" onclick="location.href='/Correcao_testes/SRS2/index.html'">
           <div class="test-name" style="color: var(--teal)">SRS-2</div>
           <div class="test-desc">Responsividade Social (2.5-65 anos)</div>
           <div class="test-status"><span class="badge badge-green">Ativo</span></div>
@@ -96,7 +96,7 @@
     </main>
   </div>
 
-  <script src="/Equilibrium_Neuro2/js/auth.js"></script>
-  <script>if (!isAuthed()) location.href = '/Equilibrium_Neuro2/login.html';</script>
+  <script src="/js/auth.js"></script>
+  <script>if (!isAuthed()) location.href = '/login.html';</script>
 </body>
 </html>
