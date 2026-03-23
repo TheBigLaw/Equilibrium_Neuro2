@@ -598,8 +598,9 @@ async function baixarPDF() {
       margin: [5, 5, 5, 5],
       filename: nomeArquivo,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 1.5, useCORS: true, logging: false, scrollY: 0 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
+      jsPDF: { unit: 'mm', format: [210, 2000], orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all'] }
     }).from(rel).save();
   } catch(e) {
     console.error("Erro ao gerar PDF:", e);
