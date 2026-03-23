@@ -487,7 +487,7 @@ function montarRelatorio(data) {
       <div class="deco1"></div><div class="deco2"></div>
       <div class="rpt-hdr-inner">
         <div style="display:flex;align-items:center;gap:16px">
-          <img class="hdr-logo" src="/logo2.png" alt="Logo" onerror="this.style.display='none'">
+          <img class="hdr-logo" src="/Equilibrium_Neuro2/logo2.png" alt="Logo" onerror="this.style.display='none'">
           <div>
             <div class="kicker">Relatório Neuropsicológico</div>
             <div class="title">WISC-IV</div>
@@ -586,36 +586,48 @@ async function baixarPDFSalvo(i) { const item = getLaudos()[i]; if (!item) retur
 async function baixarPDF() {
   const rel = document.getElementById("relatorio");
   if (!rel) return;
-  await esperarImagensCarregarem(rel);
+
   const nome = rel.querySelector('.rpt-info .val.bold')?.textContent || 'Relatorio';
   const nomeArquivo = 'WISC-IV_' + nome.replace(/\s+/g, '_').substring(0, 30) + '.pdf';
+
   showLoading("Gerando PDF...");
+
+  closeReportModal();
+  await new Promise(r => setTimeout(r, 100));
+
+  rel.style.display = 'block';
+  rel.style.width = '960px';
+  rel.style.position = 'absolute';
+  rel.style.left = '0';
+  rel.style.top = '0';
+  rel.style.zIndex = '-1';
+
+  await new Promise(r => setTimeout(r, 500));
+  await esperarImagensCarregarem(rel);
+
   try {
-    const clone = rel.cloneNode(true);
-    clone.style.cssText = 'position:fixed;left:-9999px;top:0;width:960px;background:#fff;z-index:-1;display:block;';
-    document.body.appendChild(clone);
-    await new Promise(r => setTimeout(r, 300));
-    const h = clone.scrollHeight;
-    const w = clone.scrollWidth || 960;
-    const pxToMm = 25.4 / 96;
-    const pdfW = Math.ceil(w * pxToMm) + 10;
-    const pdfH = Math.ceil(h * pxToMm) + 10;
-    const opt = {
+    const h = rel.scrollHeight;
+    const pxPerMm = 96 / 25.4;
+    const pdfH = Math.ceil(h / pxPerMm) + 10;
+
+    await html2pdf().set({
       margin: [3, 3, 3, 3],
       filename: nomeArquivo,
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0, width: w, windowWidth: w },
-      jsPDF: { unit: 'mm', format: [pdfW, pdfH], orientation: 'portrait' },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: [260, pdfH], orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all'] }
-    };
-    await html2pdf().set(opt).from(clone).save();
-    document.body.removeChild(clone);
+    }).from(rel).save();
+
   } catch(e) {
-    console.error("Erro ao gerar PDF:", e);
+    console.error("Erro PDF:", e);
     alert("Erro ao gerar PDF.");
-    const c = document.querySelector('[style*="left:-9999px"]');
-    if (c) c.remove();
-  } finally { hideLoading(); }
+  }
+
+  rel.style.cssText = '';
+  rel.style.display = 'none';
+  hideLoading();
+  openReportModal();
 }
 async function imprimirRelatorio() { window.print(); }
 
