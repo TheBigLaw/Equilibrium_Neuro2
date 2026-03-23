@@ -767,24 +767,37 @@ async function baixarPDF() {
   showLoading("Gerando PDF...");
 
   try {
-    // Medir altura real do conteúdo e converter px → mm
-    const h = rel.scrollHeight;
+    // Criar clone fora do modal com largura fixa
+    const clone = rel.cloneNode(true);
+    clone.style.cssText = 'position:fixed;left:-9999px;top:0;width:960px;background:#fff;z-index:-1;display:block;';
+    document.body.appendChild(clone);
+
+    // Esperar render
+    await new Promise(r => setTimeout(r, 300));
+
+    const h = clone.scrollHeight;
+    const w = clone.scrollWidth || 960;
     const pxToMm = 25.4 / 96;
-    const pdfH = Math.ceil(h * pxToMm) + 15;
+    const pdfW = Math.ceil(w * pxToMm) + 10;
+    const pdfH = Math.ceil(h * pxToMm) + 10;
 
     const opt = {
-      margin: [0, 0, 0, 0],
+      margin: [3, 3, 3, 3],
       filename: nomeArquivo,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0, windowWidth: rel.scrollWidth },
-      jsPDF: { unit: 'mm', format: [210, pdfH], orientation: 'portrait' },
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0, width: w, windowWidth: w },
+      jsPDF: { unit: 'mm', format: [pdfW, pdfH], orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all'] }
     };
 
-    await html2pdf().set(opt).from(rel).save();
+    await html2pdf().set(opt).from(clone).save();
+    document.body.removeChild(clone);
   } catch(e) {
     console.error("Erro ao gerar PDF:", e);
     alert("Erro ao gerar PDF. Tente novamente.");
+    // Cleanup
+    const c = document.querySelector('[style*="left:-9999px"]');
+    if (c) c.remove();
   } finally {
     hideLoading();
   }
