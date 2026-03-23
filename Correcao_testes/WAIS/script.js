@@ -774,8 +774,8 @@ async function baixarPDF() {
     await html2pdf().set({
       margin: [5, 5, 5, 5],
       filename: nomeArquivo,
-      image: { type: 'jpeg', quality: 2.00 },
-      html2canvas: { scale: 3, useCORS: true, logging: false, scrollY: 0 },
+      image: { type: 'jpeg', quality: 1.00 },
+      html2canvas: { scale: 4, useCORS: true, logging: false, scrollY: 0 },
       jsPDF: { unit: 'mm', format: [210, 900], orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all'] }
     }).from(rel).save();
