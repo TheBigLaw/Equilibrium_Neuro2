@@ -586,48 +586,27 @@ async function baixarPDFSalvo(i) { const item = getLaudos()[i]; if (!item) retur
 async function baixarPDF() {
   const rel = document.getElementById("relatorio");
   if (!rel) return;
+  await esperarImagensCarregarem(rel);
 
   const nome = rel.querySelector('.rpt-info .val.bold')?.textContent || 'Relatorio';
   const nomeArquivo = 'WISC-IV_' + nome.replace(/\s+/g, '_').substring(0, 30) + '.pdf';
 
   showLoading("Gerando PDF...");
 
-  closeReportModal();
-  await new Promise(r => setTimeout(r, 100));
-
-  rel.style.display = 'block';
-  rel.style.width = '960px';
-  rel.style.position = 'absolute';
-  rel.style.left = '0';
-  rel.style.top = '0';
-  rel.style.zIndex = '-1';
-
-  await new Promise(r => setTimeout(r, 500));
-  await esperarImagensCarregarem(rel);
-
   try {
-    const h = rel.scrollHeight;
-    const pxPerMm = 96 / 25.4;
-    const pdfH = Math.ceil(h / pxPerMm) + 10;
-
     await html2pdf().set({
-      margin: [3, 3, 3, 3],
+      margin: [5, 5, 5, 5],
       filename: nomeArquivo,
-      image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
-      jsPDF: { unit: 'mm', format: [260, pdfH], orientation: 'portrait' },
-      pagebreak: { mode: ['avoid-all'] }
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     }).from(rel).save();
-
   } catch(e) {
-    console.error("Erro PDF:", e);
-    alert("Erro ao gerar PDF.");
+    console.error("Erro ao gerar PDF:", e);
+    alert("Erro ao gerar PDF. Tente novamente.");
+  } finally {
+    hideLoading();
   }
-
-  rel.style.cssText = '';
-  rel.style.display = 'none';
-  hideLoading();
-  openReportModal();
 }
 async function imprimirRelatorio() { window.print(); }
 
