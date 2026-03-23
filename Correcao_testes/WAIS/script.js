@@ -636,7 +636,7 @@ function montarRelatorio(data) {
       <div class="deco1"></div><div class="deco2"></div>
       <div class="rpt-hdr-inner">
         <div style="display:flex;align-items:center;gap:16px">
-          <img class="hdr-logo" src="/logo2.png" alt="Logo" onerror="this.style.display='none'">
+          <img class="hdr-logo" src="/Equilibrium_Neuro2/logo2.png" alt="Logo" onerror="this.style.display='none'">
           <div>
             <div class="kicker">Relatório Neuropsicológico</div>
             <div class="title">WAIS-III</div>
@@ -759,55 +759,51 @@ async function baixarPDFSalvo(index) {
 async function baixarPDF() {
   const rel = document.getElementById("relatorio");
   if (!rel) return;
-  await esperarImagensCarregarem(rel);
 
   const nome = rel.querySelector('.rpt-info .val.bold')?.textContent || 'Relatorio';
   const nomeArquivo = 'WAIS-III_' + nome.replace(/\s+/g, '_').substring(0, 30) + '.pdf';
 
   showLoading("Gerando PDF...");
 
-  // Salvar estilos originais do modal
-  const modal = document.querySelector('.report-modal');
-  const backdrop = document.getElementById('reportModal');
-  const modalBody = document.getElementById('reportModalBody');
-  const savedModal = modal ? modal.style.cssText : '';
-  const savedBackdrop = backdrop ? backdrop.style.cssText : '';
-  const savedBody = modalBody ? modalBody.style.cssText : '';
+  // 1. Fechar modal — devolve #relatorio para .main-content
+  closeReportModal();
+  await new Promise(r => setTimeout(r, 100));
+
+  // 2. Mostrar relatorio no body com largura fixa
+  rel.style.display = 'block';
+  rel.style.width = '960px';
+  rel.style.position = 'absolute';
+  rel.style.left = '0';
+  rel.style.top = '0';
+  rel.style.zIndex = '-1';
+
+  await new Promise(r => setTimeout(r, 500));
+  await esperarImagensCarregarem(rel);
 
   try {
-    // Expandir modal para largura total fora da tela
-    if (backdrop) backdrop.style.cssText += ';position:fixed;left:0;top:0;width:100vw;height:auto;overflow:visible;background:none;backdrop-filter:none;padding:0;z-index:-1;opacity:0;';
-    if (modal) modal.style.cssText += ';max-width:960px;width:960px;margin:0;border-radius:0;box-shadow:none;';
-    if (modalBody) modalBody.style.cssText += ';overflow:visible;max-height:none;padding:0;';
-
-    await new Promise(r => setTimeout(r, 200));
-
-    const w = 960;
     const h = rel.scrollHeight;
-    const pxToMm = 25.4 / 96;
-    const pdfW = Math.ceil(w * pxToMm) + 6;
-    const pdfH = Math.ceil(h * pxToMm) + 6;
+    const pxPerMm = 96 / 25.4;
+    const pdfH = Math.ceil(h / pxPerMm) + 10;
 
-    const opt = {
+    await html2pdf().set({
       margin: [3, 3, 3, 3],
       filename: nomeArquivo,
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0, width: w, height: h, windowWidth: w },
-      jsPDF: { unit: 'mm', format: [pdfW, pdfH], orientation: 'portrait' },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: [260, pdfH], orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all'] }
-    };
+    }).from(rel).save();
 
-    await html2pdf().set(opt).from(rel).save();
   } catch(e) {
-    console.error("Erro ao gerar PDF:", e);
-    alert("Erro ao gerar PDF. Tente novamente.");
-  } finally {
-    // Restaurar modal
-    if (backdrop) backdrop.style.cssText = savedBackdrop;
-    if (modal) modal.style.cssText = savedModal;
-    if (modalBody) modalBody.style.cssText = savedBody;
-    hideLoading();
+    console.error("Erro PDF:", e);
+    alert("Erro ao gerar PDF.");
   }
+
+  // 3. Esconder e reabrir modal
+  rel.style.cssText = '';
+  rel.style.display = 'none';
+  hideLoading();
+  openReportModal();
 }
 
 async function imprimirRelatorio() {
