@@ -775,8 +775,8 @@ async function baixarPDF() {
       margin: [5, 5, 5, 5],
       filename: nomeArquivo,
       image: { type: 'jpeg', quality: 2.00 },
-      html2canvas: { scale: 1, useCORS: true, logging: false, scrollY: 0 },
-      jsPDF: { unit: 'mm', format: [210, 1500], orientation: 'portrait' },
+      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
+      jsPDF: { unit: 'mm', format: [210, 1000], orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all'] }
     }).from(rel).save();
   } catch(e) {
