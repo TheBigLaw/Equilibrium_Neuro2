@@ -766,16 +766,6 @@ async function baixarPDF() {
 
   showLoading("Gerando PDF...");
 
-  // Cria um clone do relatório sem o cabeçalho decorativo (rpt-hdr)
-  // que causava uma página azul extra no início do PDF
-  const clone = rel.cloneNode(true);
-  clone.querySelector('.rpt-hdr')?.remove();
-  clone.style.position = 'absolute';
-  clone.style.left = '-9999px';
-  clone.style.top = '0';
-  clone.style.display = 'block';
-  document.body.appendChild(clone);
-
   try {
     await html2pdf().set({
       margin: [5, 5, 5, 5],
@@ -784,12 +774,11 @@ async function baixarPDF() {
       html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
       jsPDF: { unit: 'mm', format: [210, 2000], orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all'] }
-    }).from(clone).save();
+    }).from(rel).save();
   } catch(e) {
     console.error("Erro ao gerar PDF:", e);
     alert("Erro ao gerar PDF. Tente novamente.");
   } finally {
-    document.body.removeChild(clone);
     hideLoading();
   }
 }
