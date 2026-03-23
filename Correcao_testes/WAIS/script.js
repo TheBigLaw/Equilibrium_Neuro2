@@ -766,39 +766,18 @@ async function baixarPDF() {
 
   showLoading("Gerando PDF...");
 
-  // Escalar a 85%
-  const report = rel.querySelector('.report');
-  if (report) {
-    report.style.transform = 'scale(0.85)';
-    report.style.transformOrigin = 'top left';
-    report.style.width = '117.65%';
-  }
-
-  await new Promise(r => setTimeout(r, 300));
-
   try {
-    // Calcular altura real após scale
-    const h = rel.scrollHeight * 0.85;
-    const pxPerMm = 96 / 25.4;
-    const pdfH = Math.ceil(h / pxPerMm) + 15;
-
     await html2pdf().set({
-      margin: [4, 4, 4, 4],
+      margin: [5, 5, 5, 5],
       filename: nomeArquivo,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
-      jsPDF: { unit: 'mm', format: [210, pdfH], orientation: 'portrait' },
-      pagebreak: { mode: ['avoid-all'] }
+      html2canvas: { scale: 1.5, useCORS: true, logging: false, scrollY: 0 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     }).from(rel).save();
   } catch(e) {
     console.error("Erro ao gerar PDF:", e);
     alert("Erro ao gerar PDF. Tente novamente.");
   } finally {
-    if (report) {
-      report.style.transform = '';
-      report.style.transformOrigin = '';
-      report.style.width = '';
-    }
     hideLoading();
   }
 }
