@@ -636,7 +636,7 @@ function montarRelatorio(data) {
       <div class="deco1"></div><div class="deco2"></div>
       <div class="rpt-hdr-inner">
         <div style="display:flex;align-items:center;gap:16px">
-          <img class="hdr-logo" src="/Equilibrium_Neuro2/logo2.png" alt="Logo" onerror="this.style.display='none'">
+          <img class="hdr-logo" src="/logo2.png" alt="Logo" onerror="this.style.display='none'">
           <div>
             <div class="kicker">Relatório Neuropsicológico</div>
             <div class="title">WAIS-III</div>
