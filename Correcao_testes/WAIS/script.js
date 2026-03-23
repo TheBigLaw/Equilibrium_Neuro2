@@ -766,39 +766,46 @@ async function baixarPDF() {
 
   showLoading("Gerando PDF...");
 
+  // Salvar estilos originais do modal
+  const modal = document.querySelector('.report-modal');
+  const backdrop = document.getElementById('reportModal');
+  const modalBody = document.getElementById('reportModalBody');
+  const savedModal = modal ? modal.style.cssText : '';
+  const savedBackdrop = backdrop ? backdrop.style.cssText : '';
+  const savedBody = modalBody ? modalBody.style.cssText : '';
+
   try {
-    // Criar clone fora do modal com largura fixa
-    const clone = rel.cloneNode(true);
-    clone.style.cssText = 'position:fixed;left:-9999px;top:0;width:960px;background:#fff;z-index:-1;display:block;';
-    document.body.appendChild(clone);
+    // Expandir modal para largura total fora da tela
+    if (backdrop) backdrop.style.cssText += ';position:fixed;left:0;top:0;width:100vw;height:auto;overflow:visible;background:none;backdrop-filter:none;padding:0;z-index:-1;opacity:0;';
+    if (modal) modal.style.cssText += ';max-width:960px;width:960px;margin:0;border-radius:0;box-shadow:none;';
+    if (modalBody) modalBody.style.cssText += ';overflow:visible;max-height:none;padding:0;';
 
-    // Esperar render
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 200));
 
-    const h = clone.scrollHeight;
-    const w = clone.scrollWidth || 960;
+    const w = 960;
+    const h = rel.scrollHeight;
     const pxToMm = 25.4 / 96;
-    const pdfW = Math.ceil(w * pxToMm) + 10;
-    const pdfH = Math.ceil(h * pxToMm) + 10;
+    const pdfW = Math.ceil(w * pxToMm) + 6;
+    const pdfH = Math.ceil(h * pxToMm) + 6;
 
     const opt = {
       margin: [3, 3, 3, 3],
       filename: nomeArquivo,
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0, width: w, windowWidth: w },
+      html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0, width: w, height: h, windowWidth: w },
       jsPDF: { unit: 'mm', format: [pdfW, pdfH], orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all'] }
     };
 
-    await html2pdf().set(opt).from(clone).save();
-    document.body.removeChild(clone);
+    await html2pdf().set(opt).from(rel).save();
   } catch(e) {
     console.error("Erro ao gerar PDF:", e);
     alert("Erro ao gerar PDF. Tente novamente.");
-    // Cleanup
-    const c = document.querySelector('[style*="left:-9999px"]');
-    if (c) c.remove();
   } finally {
+    // Restaurar modal
+    if (backdrop) backdrop.style.cssText = savedBackdrop;
+    if (modal) modal.style.cssText = savedModal;
+    if (modalBody) modalBody.style.cssText = savedBody;
     hideLoading();
   }
 }
