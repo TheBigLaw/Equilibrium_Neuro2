@@ -555,7 +555,7 @@ function montarRelatorio(data) {
       </div>
 
       <div class="rpt-sh"><span class="num">9</span><span class="sh-title">Interpretação Clínica</span></div>
-      <div class="rpt-interp">${textoInterp.split("\\n\\n").map(p => `<p>${p}</p>`).join("")}</div>
+      <div class="rpt-interp">${textoInterp.split("\n\n").map(p => `<p>${p}</p>`).join("")}</div>
 
       ${recomendacoes ? `<div class="rpt-sh"><span class="num" style="background:#7c3aed">10</span><span class="sh-title">Conclusão e Recomendações</span><span class="sh-new">Novo</span></div><div class="rpt-rec">${recomendacoes}</div>` : ""}
 
@@ -600,15 +600,20 @@ async function baixarPDF() {
     report.style.width = '117.65%';
   }
 
-  await new Promise(r => setTimeout(r, 200));
+  await new Promise(r => setTimeout(r, 300));
 
   try {
+    const h = rel.scrollHeight * 0.85;
+    const pxPerMm = 96 / 25.4;
+    const pdfH = Math.ceil(h / pxPerMm) + 15;
+
     await html2pdf().set({
       margin: [4, 4, 4, 4],
       filename: nomeArquivo,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      jsPDF: { unit: 'mm', format: [210, pdfH], orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all'] }
     }).from(rel).save();
   } catch(e) {
     console.error("Erro ao gerar PDF:", e);
