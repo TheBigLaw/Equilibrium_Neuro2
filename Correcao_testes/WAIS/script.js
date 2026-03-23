@@ -766,6 +766,10 @@ async function baixarPDF() {
 
   showLoading("Gerando PDF...");
 
+  // Esconde temporariamente o cabeçalho azul (rpt-hdr) antes de gerar o PDF
+  const hdr = rel.querySelector('.rpt-hdr');
+  if (hdr) hdr.style.display = 'none';
+
   try {
     await html2pdf().set({
       margin: [5, 5, 5, 5],
@@ -779,6 +783,8 @@ async function baixarPDF() {
     console.error("Erro ao gerar PDF:", e);
     alert("Erro ao gerar PDF. Tente novamente.");
   } finally {
+    // Restaura o cabeçalho na tela após gerar o PDF
+    if (hdr) hdr.style.display = '';
     hideLoading();
   }
 }
