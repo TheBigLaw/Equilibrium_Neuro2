@@ -1,42 +1,49 @@
 /* ═══════════════════════════════════
-   CHECKLIST — Lógica
-   Mesmo comportamento do original:
-   - Navegação de abas
-   - Destaque visual ao marcar checkbox
+   CHECKLIST v2 — Lógica
+   Abas + Checkbox + Contador
    ═══════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", function() {
 
-document.addEventListener("DOMContentLoaded", function () {
+  // Tabs
+  var tabs = document.querySelectorAll(".cl-tab");
+  var contents = document.querySelectorAll(".cl-content");
 
-  // --- Navegação das Abas ---
-  var tabBtns = document.querySelectorAll(".tab-btn");
-  var tabContents = document.querySelectorAll(".tab-content");
-
-  tabBtns.forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      // Desativa todas
-      tabBtns.forEach(function (b) { b.classList.remove("active"); });
-      tabContents.forEach(function (c) { c.classList.remove("active"); });
-
-      // Ativa a clicada
-      btn.classList.add("active");
-      var targetId = btn.getAttribute("data-target");
-      document.getElementById(targetId).classList.add("active");
+  tabs.forEach(function(tab) {
+    tab.addEventListener("click", function() {
+      tabs.forEach(function(t) { t.classList.remove("active"); });
+      contents.forEach(function(c) { c.classList.remove("active"); });
+      tab.classList.add("active");
+      document.getElementById(tab.getAttribute("data-target")).classList.add("active");
+      updateCounts();
     });
   });
 
-  // --- Checkbox: destaque visual na linha ---
-  var checkboxes = document.querySelectorAll(".check-teste");
-
-  checkboxes.forEach(function (checkbox) {
-    checkbox.addEventListener("change", function () {
+  // Checkbox highlight + count
+  document.querySelectorAll(".cl-check").forEach(function(cb) {
+    cb.addEventListener("change", function() {
       var tr = this.closest("tr");
-
-      if (this.checked) {
-        tr.style.backgroundColor = "rgba(26, 86, 219, 0.04)";
-      } else {
-        tr.style.backgroundColor = "";
-      }
+      var tabId = this.closest(".cl-content")?.id;
+      var color = tabId === "pre-escolar" ? "rgba(124,58,237,.04)" : tabId === "escolar" ? "rgba(13,148,136,.04)" : "rgba(26,86,219,.04)";
+      tr.style.backgroundColor = this.checked ? color : "";
+      updateCounts();
     });
   });
 
+  function updateCounts() {
+    ["pre-escolar","escolar","adultos"].forEach(function(id) {
+      var panel = document.getElementById(id);
+      if (!panel) return;
+      var total = panel.querySelectorAll(".cl-check").length;
+      var checked = panel.querySelectorAll(".cl-check:checked").length;
+      var badge = document.querySelector('.cl-tab[data-target="' + id + '"] .tab-count');
+      if (badge) badge.textContent = checked > 0 ? checked + "/" + total : total;
+    });
+    // Stats
+    var all = document.querySelectorAll(".cl-check").length;
+    var sel = document.querySelectorAll(".cl-check:checked").length;
+    var stat = document.getElementById("clStatTotal");
+    if (stat) stat.textContent = sel + " de " + all + " selecionados";
+  }
+
+  updateCounts();
 });
