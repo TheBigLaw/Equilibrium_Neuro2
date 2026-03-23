@@ -189,7 +189,7 @@ function renderRelatorios() {
 // CHECKLIST — redireciona para a página completa
 // ═══════════════════════════════════
 function renderChecklist() {
-  location.href = '/Equilibrium_Neuro2/check_list/index.html';
+  location.href = '/check_list/index.html';
   return '';
 }
 
