@@ -150,7 +150,7 @@ function renderPacientes() {
 // ═══════════════════════════════════
 // CORREÇÃO DE TESTES
 // ═══════════════════════════════════
-function renderCorrecao_testes() {
+function renderCorrecao() {
   location.href = '/Correcao_testes/index.html';
   return '';
 }
