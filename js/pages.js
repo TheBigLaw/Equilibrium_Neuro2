@@ -177,7 +177,7 @@ function renderAplicacao() {
   return `
     <div style="width: 100%; height: calc(100vh - 150px); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
       <iframe 
-        src="/Aplicacao_Testes/index.html" 
+        src="../Aplicacao_Testes/" 
         style="width: 100%; height: 100%; border: none;"
         title="Aplicação de Testes">
       </iframe>
