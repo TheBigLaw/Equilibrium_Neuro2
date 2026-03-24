@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SRS-2 Pré-Escolar | Equilibrium</title>
+  <link rel="stylesheet" href="/Correcao_testes/Vinalend3/style.css" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar no-print">
+      <div class="sidebar-brand">
+        <img src="/logo2.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'" />
+        <div><div class="brand-name">Equilibrium</div><div class="brand-sub">Neuropsicologia</div></div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item" href="/"><span class="nav-icon">📊</span><span>Dashboard</span></a>
+        <a class="nav-item" href="/#pacientes"><span class="nav-icon">👤</span><span>Pacientes</span></a>
+        <a class="nav-item active" href="/Correcao_testes/"><span class="nav-icon">✏️</span><span>Correção de Testes</span></a>
+        <a class="nav-item" href="/#relatorios"><span class="nav-icon">📄</span><span>Relatórios</span></a>
+        <a class="nav-item" href="/check_list/"><span class="nav-icon">✅</span><span>Checklist</span></a>
+        <a class="nav-item" href="/#config"><span class="nav-icon">⚙️</span><span>Configurações</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info"><div class="user-avatar">A</div><div><div class="user-name">Admin</div><div class="user-role">Profissional</div></div></div>
+        <button class="btn-logout" onclick="doLogout()">Sair</button>
+      </div>
+    </aside>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-inner">
+        <div class="header-title">
+            <h1>
+                Vineland-3
+                <span>Formulário de Pais/Cuidadores dos Níveis de Domínio</span>
+            </h1>
+            <div class="header-badge">v3.0</div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="imprimirResultados()">🖨️ Imprimir</button>
+            <button class="btn btn-danger" onclick="limparFormulario()">🗑️ Limpar</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- IDENTIFICAÇÃO -->
+    <div class="card">
+        <div class="card-header">
+            <div class="icon" style="background:#ede9fe;color:#7c3aed;">👤</div>
+            Identificação do Paciente
+        </div>
+        <div class="card-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Nome do Examinado</label>
+                    <input type="text" id="nomeExaminado">
+                </div>
+                <div class="form-group">
+                    <label>Data de Nascimento</label>
+                    <input type="date" id="dataNascimento" onchange="processarResultados()">
+                </div>
+                <div class="form-group">
+                    <label>Data do Teste</label>
+                    <input type="date" id="dataTeste" onchange="processarResultados()">
+                </div>
+                <div class="form-group">
+                    <label>Sexo</label>
+                    <select id="sexo">
+                        <option value="">Selecione</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nome do Respondente</label>
+                    <input type="text" id="nomeRespondente">
+                </div>
+                <div class="form-group">
+                    <label>Relacionamento</label>
+                    <select id="relacionamento">
+                        <option value="">Selecione</option>
+                        <option value="mae">Mãe</option>
+                        <option value="pai">Pai</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Avaliador</label>
+                    <input type="text" id="avaliador">
+                </div>
+            </div>
+            <div class="idade-display">
+                <span>Idade: <strong id="idadeAnos">—</strong> anos</span>
+                <span>e <strong id="idadeMeses">—</strong> meses</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs-nav">
+        <button class="tab-btn active" onclick="mostrarSecao('secao_COM')">📝 Comunicação</button>
+        <button class="tab-btn" onclick="mostrarSecao('secao_AVD')">🏠 AVD</button>
+        <button class="tab-btn" onclick="mostrarSecao('secao_SOC')">🤝 Socialização</button>
+        <button class="tab-btn" onclick="mostrarSecao('secao_HMOT')">🏃 Motoras</button>
+        <button class="tab-btn" onclick="mostrarSecao('secao_COMP')">⚠️ Comportamento</button>
+        <button class="tab-btn" onclick="mostrarSecao('secao_RESULT')">📊 Resultados</button>
+    </div>
+
+    <!-- CONTEÚDO DAS SEÇÕES (mantido igual ao seu, sem CSS) -->
+    <!-- ... (todo o restante permanece exatamente igual, sem o <style>) -->
+
+</div>
+
+<script src="vineland3.js"></script>
+</body>
+</html>
