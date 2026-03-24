@@ -169,6 +169,23 @@ function renderCorrecao() {
 }
 
 // ═══════════════════════════════════
+// APLICAÇÃO DE TESTES
+// ═══════════════════════════════════
+function renderAplicacao() {
+  // Como a aplicação de testes é um sistema complexo com CSS próprio, 
+  // a melhor forma de injetá-la mantendo o shell do app é via iframe.
+  return `
+    <div style="width: 100%; height: calc(100vh - 150px); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+      <iframe 
+        src="/Aplicacao_Testes/SRS2/index.html" 
+        style="width: 100%; height: 100%; border: none;"
+        title="Aplicação de Testes">
+      </iframe>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════
 // RELATÓRIOS
 // ═══════════════════════════════════
 function renderRelatorios() {
@@ -243,6 +260,7 @@ const PAGE_REGISTRY = {
   dashboard:  { title: "Dashboard",          subtitle: "Visão geral do sistema",      render: renderDashboard },
   pacientes:  { title: "Pacientes",          subtitle: "Gerencie seus pacientes",     render: renderPacientes },
   correcao:   { title: "Correção de Testes", subtitle: "Selecione o instrumento",     render: renderCorrecao },
+  aplicacao:  { title: "Aplicação de Testes", subtitle: "Instrumentos de avaliação",   render: renderAplicacao },
   relatorios: { title: "Relatórios",         subtitle: "Gerencie relatórios gerados", render: renderRelatorios },
   checklist:  { title: "Checklist",          subtitle: "Testes disponíveis no sistema", render: renderChecklist },
   config:     { title: "Configurações",      subtitle: "Preferências do sistema",     render: renderConfig },
