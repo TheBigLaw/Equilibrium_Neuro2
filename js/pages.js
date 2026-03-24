@@ -220,19 +220,19 @@ function renderConfig() {
       <div class="config-grid">
         <div class="config-field">
           <label>Nome</label>
-          <div class="value">Dra. Maria Clara Ferreira</div>
+          <div class="value">Dr. Wessilon Marques de Sousa</div>
         </div>
         <div class="config-field">
           <label>CRP</label>
-          <div class="value">CRP 04/12345</div>
+          <div class="value">CRP 04/53832V</div>
         </div>
         <div class="config-field">
           <label>Especialidade</label>
-          <div class="value">Neuropsicóloga</div>
+          <div class="value">Neuropsicólogo</div>
         </div>
         <div class="config-field">
           <label>Contato</label>
-          <div class="value">maria@clinica.com.br</div>
+          <div class="value">wessilon@gmail.com</div>
         </div>
       </div>
     </div>
