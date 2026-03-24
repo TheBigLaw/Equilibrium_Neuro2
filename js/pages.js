@@ -151,19 +151,15 @@ function renderPacientes() {
 // CORREÇÃO DE TESTES
 // ═══════════════════════════════════
 function renderCorrecao() {
+  // Como a aplicação de testes é um sistema complexo com CSS próprio, 
+  // a melhor forma de injetá-la mantendo o shell do app é via iframe.
   return `
-    <div class="test-grid">
-      ${TESTES.map(t => {
-        const isActive = t.status === "Ativo";
-        const onClick = isActive && t.href ? `onclick="location.href='${t.href}'"` : "";
-        return `
-          <div class="test-card ${isActive ? '' : 'disabled'}" ${onClick}>
-            <div class="test-name" style="color:var(--${t.color})">${t.nome}</div>
-            <div class="test-desc">${t.desc}</div>
-            <div class="test-status">${testBadge(t.status)}</div>
-          </div>
-        `;
-      }).join("")}
+    <div style="width: 100%; height: calc(100vh - 150px); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+      <iframe 
+        src="/Correcao_testes/" 
+        style="width: 100%; height: 100%; border: none;"
+        title="Correção de Testes">
+      </iframe>
     </div>
   `;
 }
