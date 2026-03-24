@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login | Equilibrium</title>
-  <link rel="stylesheet" href="/Equilibrium_Neuro2/style.css" />
-  <link rel="icon" type="image/png" href="/Equilibrium_Neuro2/logo.png" />
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon" type="image/png" href="/logo.png" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="login-screen">
     <div class="login-card">
-      <img class="login-logo" src="/Equilibrium_Neuro2/logo3.png" alt="Equilibrium" onerror="this.style.display='none'" />
+      <img class="login-logo" src="/logo3.png" alt="Equilibrium" onerror="this.style.display='none'" />
       <p class="login-subtitle">Acesso restrito</p>
       <div class="login-form">
         <div class="field">
@@ -28,10 +28,10 @@
     </div>
   </div>
 
-  <script src="/Equilibrium_Neuro2/js/auth.js"></script>
+  <script src="/js/auth.js"></script>
   <script>
     // Se já logado, redireciona para home
-    if (isAuthed()) { location.href = '/Equilibrium_Neuro2/'; }
+    if (isAuthed()) { location.href = '/'; }
 
     // Popular select
     const sel = document.getElementById('loginUser');
