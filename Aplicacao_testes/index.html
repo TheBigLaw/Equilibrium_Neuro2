@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Correção de Testes | Equilibrium</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- CONTEÚDO -->
+    <main class="main-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Aplicacao de Testes</h1>
+          <p class="page-subtitle">Selecione o instrumento para iniciar</p>
+        </div>
+      </div>
+
+        <div class="test-card" onclick="location.href='/Aplicacao_testes/SRS2/index.html'">
+          <div class="test-name" style="color: var(--teal)">SRS-2</div>
+          <div class="test-desc">Responsividade Social (2.5-65 anos)</div>
+          <div class="test-status"><span class="badge badge-green">Ativo</span></div>
+        </div>
+        <div class="test-card disabled">
+          <div class="test-name" style="color: var(--text-muted)">OUTROS</div>
+          <div class="test-desc">Pré-escola (2.6-7.7 anos)</div>
+          <div class="test-status"><span class="badge badge-gray">Em breve</span></div>
+        </div>
+        <div class="test-card disabled">
+          <div class="test-name" style="color: var(--text-muted)">OUTROS</div>
+          <div class="test-desc">Memória verbal</div>
+          <div class="test-status"><span class="badge badge-gray">Em breve</span></div>
+        </div>
+        <div class="test-card disabled">
+          <div class="test-name" style="color: var(--text-muted)">OUTROS</div>
+          <div class="test-desc">Desempenho escolar</div>
+          <div class="test-status"><span class="badge badge-gray">Em breve</span></div>
+        </div>
+        <div class="test-card disabled">
+          <div class="test-name" style="color: var(--text-muted)">OUTROS</div>
+          <div class="test-desc">Atenção</div>
+          <div class="test-status"><span class="badge badge-gray">Em breve</span></div>
+        </div>
+        <div class="test-card disabled">
+          <div class="test-name" style="color: var(--text-muted)">OUTROS</div>
+          <div class="test-desc">Breve neuropsicológica</div>
+          <div class="test-status"><span class="badge badge-gray">Em breve</span></div>
+        </div>
+        <div class="test-card disabled">
+          <div class="test-name" style="color: var(--text-muted)">OUTROS</div>
+          <div class="test-desc">Funções executivas</div>
+          <div class="test-status"><span class="badge badge-gray">Em breve</span></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script>if (!isAuthed()) location.href = '/login.html';</script>
+</body>
+</html>
