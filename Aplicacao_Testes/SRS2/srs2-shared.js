@@ -11,7 +11,7 @@ let SRS2_RULES = null;
 const $ = (sel) => document.querySelector(sel);
 
 // Caminho para o JSON — pode ser sobrescrito em cada index.html
-if (typeof DATA_PATH === "undefined") { var DATA_PATH = "../data/srs2_rules.json"; }
+if (typeof DATA_PATH === "undefined") { var DATA_PATH = "/Aplicacao_Testes/SRS2/data/srs2_rules.json"; }
 
 // ─── INICIALIZAÇÃO DAS CORES ─────────────────────────────────────────────────
 function aplicarAcento(){
@@ -49,7 +49,7 @@ function setSubtitle(msg){
 
 // ─── CARREGAR JSON ────────────────────────────────────────────────────────────
 async function carregarRegras(){
-  const path = (typeof DATA_PATH !== "undefined") ? DATA_PATH : "../data/srs2_rules.json";
+  const path = (typeof DATA_PATH !== "undefined") ? DATA_PATH : "/Aplicacao_Testes/SRS2/data/srs2_rules.json";
   let res;
   try {
     res = await fetch(path, { cache: "no-store" });
