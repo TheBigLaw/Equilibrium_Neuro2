@@ -150,36 +150,20 @@ function renderPacientes() {
 // ═══════════════════════════════════
 // CORREÇÃO DE TESTES
 // ═══════════════════════════════════
-function renderCorrecao() {
-  // Como a aplicação de testes é um sistema complexo com CSS próprio, 
-  // a melhor forma de injetá-la mantendo o shell do app é via iframe.
-  return `
-    <div style="width: 100%; height: calc(100vh - 150px); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-      <iframe 
-        src="/Correcao_testes/" 
-        style="width: 100%; height: 100%; border: none;"
-        title="Correção de Testes">
-      </iframe>
-    </div>
-  `;
+function renderCorrecao_testes() {
+  location.href = '/Correcao_testes/index.html';
+  return '';
 }
+
 
 // ═══════════════════════════════════
 // APLICAÇÃO DE TESTES
 // ═══════════════════════════════════
 function renderAplicacao() {
-  // Como a aplicação de testes é um sistema complexo com CSS próprio, 
-  // a melhor forma de injetá-la mantendo o shell do app é via iframe.
-  return `
-    <div style="width: 100%; height: calc(100vh - 150px); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-      <iframe 
-        src="/Aplicacao_testes/" 
-        style="width: 100%; height: 100%; border: none;"
-        title="Aplicação de Testes">
-      </iframe>
-    </div>
-  `;
+  location.href = '/Aplicacao_testes/index.html';
+  return '';
 }
+
 
 // ═══════════════════════════════════
 // RELATÓRIOS
