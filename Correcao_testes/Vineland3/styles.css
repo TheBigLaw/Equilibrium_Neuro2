@@ -526,3 +526,22 @@
             .tabs-nav { padding: 0 0.5rem; }
             .tab-btn { padding: 0.7rem 0.8rem; font-size: 0.75rem; }
             .container { padding: 0.75rem; }
+
+        /* =========================================================
+   ÁREA DIREITA (Mantém o cabeçalho e conteúdo no lugar)
+========================================================= */
+.main-content {
+    flex: 1; /* Ocupa todo o espaço restante ao lado da sidebar */
+    height: 100vh;
+    overflow-y: auto; /* Faz a rolagem acontecer apenas aqui dentro */
+    overflow-x: hidden;
+    background: var(--bg);
+}
+
+/* =========================================================
+   FORÇAR INPUTS BRANCOS (Resolve as caixas pretas)
+========================================================= */
+.form-group input, .form-group select {
+    background-color: #ffffff !important;
+    color: #1a1d23 !important;
+}
