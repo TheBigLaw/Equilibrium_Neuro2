@@ -42,7 +42,7 @@
             <div class="header-badge">v3.0</div>
         </div>
         <div class="header-actions">
-            <button class="btn btn-secondary" onclick="imprimirResultados()">🖨️ Imprimir</button>
+            <button class="btn btn-primary" onclick="gerarRelatorio()">📄 Gerar Relatório</button>
             <button class="btn btn-danger" onclick="limparFormulario()">🗑️ Limpar</button>
         </div>
     </div>
@@ -416,37 +416,6 @@
 
 </main> </div>
 
-<script>
-    // Observer para sincronizar valores duplicados nos resultados
-    const originalProcessar = typeof processarResultados === 'function' ? processarResultados : null;
-    
-    function syncResults() {
-        // Sincronizar pontuação bruta nos cards de resultado
-        ['COM', 'AVD', 'SOC', 'HMOT'].forEach(key => {
-            const bruta = document.getElementById(`bruta_${key}`);
-            const brutaRes = document.getElementById(`bruta_${key}_res`);
-            if (bruta && brutaRes) brutaRes.textContent = bruta.textContent;
-        });
-        // Sincronizar comportamento
-        ['sectionA', 'sectionB', 'sectionC'].forEach(key => {
-            const soma = document.getElementById(`soma_${key}`);
-            const somaRes = document.getElementById(`soma_${key}_res`);
-            if (soma && somaRes) somaRes.textContent = soma.textContent;
-        });
-    }
-
-    // Intercept processarResultados para adicionar sync
-    const _origInterval = setInterval(() => {
-        if (typeof processarResultados === 'function' && typeof RULES !== 'undefined' && RULES) {
-            clearInterval(_origInterval);
-            const _orig = processarResultados;
-            window.processarResultados = function() {
-                _orig();
-                syncResults();
-            };
-        }
-    }, 200);
-</script>
 
 <script src="/Correcao_testes/Vineland3/vineland3.js"></script>
 
