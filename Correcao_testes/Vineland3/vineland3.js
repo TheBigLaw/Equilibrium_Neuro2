@@ -267,16 +267,16 @@ function gerarRelatorio() {
     loadingScreen.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.8); z-index: 999999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);';
     loadingScreen.innerHTML = `
         <div style="background: white; padding: 2rem 3rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-            <div class="spinner"></div>
+            <div class="spinner" style="width:40px;height:40px;border:4px solid #ede9fe;border-top:4px solid #7c3aed;border-radius:50%;animation:spin 1s linear infinite;"></div>
             <div style="font-weight: 700; color: #4c1d95; font-size: 1.1rem;">Gerando relatório...</div>
             <div style="font-size: 0.8rem; color: #6b7280;">Isso pode levar alguns segundos.</div>
         </div>
+        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
     `;
     document.body.appendChild(loadingScreen);
 
-    // 2. Usar setTimeout para dar tempo ao navegador de renderizar o loading antes de travar com cálculos
+    // 2. Usar setTimeout para dar tempo ao navegador de renderizar o loading
     setTimeout(() => {
-        // Coletar dados
         const nome = document.getElementById('nomeExaminado')?.value || '—';
         const dataNasc = document.getElementById('dataNascimento')?.value;
         const dataTeste = document.getElementById('dataTeste')?.value;
@@ -325,19 +325,16 @@ function gerarRelatorio() {
         function yP(v) { return padT + cH - ((v-20)/(140-20))*cH; }
 
         let svgParts = ['<svg width="700" height="300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 300">'];
-        // faixas
         [{ min:130,max:140,fill:'rgba(26,116,49,0.12)'},{min:115,max:129,fill:'rgba(45,158,66,0.12)'},{min:86,max:114,fill:'rgba(59,130,246,0.10)'},{min:71,max:85,fill:'rgba(245,158,11,0.12)'},{min:20,max:70,fill:'rgba(220,38,38,0.10)'}].forEach(f => {
             const y1=yP(Math.min(f.max,140));const h2=yP(Math.max(f.min,20))-y1;
             svgParts.push('<rect x="'+padL+'" y="'+y1.toFixed(1)+'" width="'+cW+'" height="'+h2.toFixed(1)+'" fill="'+f.fill+'"/>');
         });
-        // linhas
         [70,85,100,115,130].forEach(v => {
             const y=yP(v).toFixed(1);
             const cor=v===100?'#dc2626':'#d1d5db';const lw=v===100?1.5:1;const dash=v===100?'':'stroke-dasharray="4,4"';
             svgParts.push('<line x1="'+padL+'" y1="'+y+'" x2="'+(padL+cW)+'" y2="'+y+'" stroke="'+cor+'" stroke-width="'+lw+'" '+dash+'/>');
             svgParts.push('<text x="'+(padL-6)+'" y="'+(parseFloat(y)+4).toFixed(1)+'" font-size="10" fill="#6b7280" text-anchor="end">'+v+'</text>');
         });
-        // pontos e linha
         const colW=cW/labels.length;
         const pontosCoords=[];
         labels.forEach((key,i) => {
@@ -362,7 +359,6 @@ function gerarRelatorio() {
         svgParts.push('</svg>');
         const svgGrafico = svgParts.join('');
 
-        // HTML tabela dominios
         const tabelaDoms = dadosDominios.map(d =>
             '<tr><td style="padding:0.6rem 1rem;font-weight:600;">'+d.nome+' ('+d.key+')</td><td style="padding:0.6rem 1rem;text-align:center;font-weight:700;">'+d.bruta+'</td><td style="padding:0.6rem 1rem;text-align:center;font-weight:800;font-size:1.1rem;color:#4c1d95;">'+(d.pp!==null?d.pp:'—')+'</td><td style="padding:0.6rem 1rem;text-align:center;"><span style="font-weight:700;color:'+d.cor+';">'+d.nivel+'</span></td></tr>'
         ).join('');
@@ -372,12 +368,74 @@ function gerarRelatorio() {
             : criticos.map(c=>'<div style="padding:0.6rem 1rem;margin-bottom:0.4rem;border-radius:6px;font-size:0.82rem;line-height:1.5;border-left:4px solid '+(c.value===2?'#dc2626':'#d97706')+';background:'+(c.value===2?'#fef2f2':'#fffbeb')+';"><span style="display:inline-block;padding:0.1rem 0.5rem;border-radius:20px;font-size:0.7rem;font-weight:700;margin-right:0.4rem;background:'+(c.value===2?'#dc2626':'#d97706')+';color:white;">'+(c.value===2?'Frequente':'Às vezes')+'</span><strong style="color:#4b5563;">'+c.section+'</strong> — Item '+c.num+': '+c.text+'</div>').join('');
 
         const comentariosHTML = comentarios.trim() ? '<div style="margin-top:1.5rem;"><div class="section-title">OBSERVAÇÕES DO AVALIADOR</div><div class="section-body" style="font-size:0.88rem;line-height:1.7;color:#374151;white-space:pre-line;">'+comentarios+'</div></div>' : '';
-
         const dataGerado = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-        // Removemos o botão solto "print-btn" daqui porque ele ficará no topo da Janela do Modal
-        const htmlContent = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Vineland-3 — Relatório | ' + nome + '</title><style>@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");*{margin:0;padding:0;box-sizing:border-box;}body{font-family:"Plus+Jakarta+Sans",system-ui,sans-serif;background:#f8f9fb;color:#1a1d23;-webkit-font-smoothing:antialiased;}.page{width:794px;min-height:1123px;margin:0 auto;background:white;box-shadow:0 4px 24px rgba(0,0,0,0.1);}.report-header{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4c1d95 100%);color:white;padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;}.logo-box{width:42px;height:42px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;}.brand-name{font-size:1.15rem;font-weight:800;}.brand-sub{font-size:0.72rem;color:#c4b5fd;}.report-title{font-size:1.3rem;font-weight:800;text-align:right;}.report-subtitle{font-size:0.72rem;color:#c4b5fd;text-align:right;}.ident{padding:1.2rem 2rem;background:#f9fafb;border-bottom:1px solid #e2e5ea;display:grid;grid-template-columns:repeat(4,1fr);gap:0.8rem 1.5rem;}.ident label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#6b7280;display:block;margin-bottom:0.2rem;}.ident span{font-size:0.85rem;font-weight:600;}.report-body{padding:1.5rem 2rem;}.section-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#4c1d95;border-bottom:2px solid #e2e5ea;padding-bottom:0.4rem;margin-bottom:1rem;}.section-body{margin-bottom:1.5rem;}.results-table{width:100%;border-collapse:collapse;font-size:0.85rem;}.results-table thead tr{background:#4c1d95;color:white;}.results-table thead th{padding:0.6rem 1rem;font-weight:700;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;text-align:left;}.results-table thead th:not(:first-child){text-align:center;}.results-table tbody tr:nth-child(even){background:#f9fafb;}.results-table tbody tr:last-child{border-top:2px solid #7c3aed;}.results-table tbody tr:last-child td{font-weight:800;color:#4c1d95;}.cca-box{background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;margin-top:1rem;flex-wrap:wrap;gap:0.5rem;}.cca-values{display:flex;align-items:center;gap:2rem;}.cca-mini-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;color:#7c3aed;}.cca-mini-val{font-size:1.6rem;font-weight:800;color:#4c1d95;line-height:1;}.grafico-wrap{border:1px solid #e2e5ea;border-radius:8px;padding:1rem;margin-bottom:1.5rem;overflow:hidden;}.grafico-wrap svg{width:100%;height:auto;}.faixas-legend{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:0.75rem;font-size:0.72rem;}.faixa-item{display:flex;align-items:center;gap:0.35rem;}.faixa-dot{width:10px;height:10px;border-radius:50%;}.behavior-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin-bottom:1rem;}.behavior-box{border:1px solid #e2e5ea;border-radius:8px;padding:0.8rem 1rem;text-align:center;}.behavior-box h4{font-size:0.7rem;text-transform:uppercase;color:#6b7280;margin-bottom:0.3rem;}.soma-val{font-size:1.6rem;font-weight:800;color:#4c1d95;line-height:1.2;}.ve-row{font-size:0.75rem;color:#6b7280;margin-top:0.3rem;}.interp-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:1.5rem;}.interp-box{border-radius:8px;padding:0.8rem 1rem;border:1px solid;}.interp-box h4{font-size:0.75rem;font-weight:800;margin-bottom:0.4rem;}.interp-box p{font-size:0.76rem;line-height:1.55;}.report-footer{border-top:1px solid #e2e5ea;padding:1rem 2rem;display:flex;align-items:flex-end;justify-content:space-between;margin-top:1rem;}.footer-sig{border-top:1px solid #374151;width:160px;margin-bottom:0.2rem;}.footer-prof{font-weight:800;font-size:0.88rem;}.footer-crp{font-size:0.75rem;color:#6b7280;}.footer-date{font-size:0.75rem;color:#6b7280;text-align:right;}.footer-conf{font-size:0.68rem;color:#9ca3af;text-align:right;max-width:220px;}@media print{body{background:white;}.page{box-shadow:none;width:100%;}}</style></head><body>'
-        + '<div class="page">'
+        // CSS INJETADO NO IFRAME (COM A REGRA DE FORÇAR CORES DE IMPRESSÃO)
+        const reportStyles = `
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
+            
+            /* =========================================================
+               A MAGIA ACONTECE AQUI: FORÇAR O NAVEGADOR A IMPRIMIR CORES
+            ========================================================= */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #f8f9fb; color: #1a1d23; margin: 0; padding: 0; }
+            .page { width: 794px; min-height: 1123px; margin: 0 auto; background: white; box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
+            .report-header { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%); color: white; padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+            .logo-box { width: 42px; height: 42px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+            .brand-name { font-size: 1.15rem; font-weight: 800; } .brand-sub { font-size: 0.72rem; color: #c4b5fd; }
+            .report-title { font-size: 1.3rem; font-weight: 800; text-align: right; }
+            .report-subtitle { font-size: 0.72rem; color: #c4b5fd; text-align: right; }
+            .ident { padding: 1.2rem 2rem; background: #f9fafb; border-bottom: 1px solid #e2e5ea; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem 1.5rem; }
+            .ident label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; display: block; margin-bottom: 0.2rem; }
+            .ident span { font-size: 0.85rem; font-weight: 600; }
+            .report-body { padding: 1.5rem 2rem; }
+            .section-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #4c1d95; border-bottom: 2px solid #e2e5ea; padding-bottom: 0.4rem; margin-bottom: 1rem; }
+            .section-body { margin-bottom: 1.5rem; }
+            .results-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+            .results-table thead tr { background: #4c1d95; color: white; }
+            .results-table thead th { padding: 0.6rem 1rem; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; text-align: left; }
+            .results-table thead th:not(:first-child) { text-align: center; }
+            .results-table tbody tr:nth-child(even) { background: #f9fafb; }
+            .results-table tbody tr:last-child { border-top: 2px solid #7c3aed; }
+            .results-table tbody tr:last-child td { font-weight: 800; color: #4c1d95; }
+            .cca-box { background: #f5f3ff; border: 1px solid #c4b5fd; border-radius: 8px; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+            .cca-values { display: flex; align-items: center; gap: 2rem; }
+            .cca-mini-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #7c3aed; }
+            .cca-mini-val { font-size: 1.6rem; font-weight: 800; color: #4c1d95; line-height: 1; }
+            .grafico-wrap { border: 1px solid #e2e5ea; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; overflow: hidden; }
+            .grafico-wrap svg { width: 100%; height: auto; }
+            .faixas-legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; font-size: 0.72rem; }
+            .faixa-item { display: flex; align-items: center; gap: 0.35rem; }
+            .faixa-dot { width: 10px; height: 10px; border-radius: 50%; }
+            .behavior-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 1rem; }
+            .behavior-box { border: 1px solid #e2e5ea; border-radius: 8px; padding: 0.8rem 1rem; text-align: center; }
+            .behavior-box h4 { font-size: 0.7rem; text-transform: uppercase; color: #6b7280; margin-bottom: 0.3rem; }
+            .soma-val { font-size: 1.6rem; font-weight: 800; color: #4c1d95; line-height: 1.2; }
+            .ve-row { font-size: 0.75rem; color: #6b7280; margin-top: 0.3rem; }
+            .interp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem; }
+            .interp-box { border-radius: 8px; padding: 0.8rem 1rem; border: 1px solid; }
+            .interp-box h4 { font-size: 0.75rem; font-weight: 800; margin-bottom: 0.4rem; }
+            .interp-box p { font-size: 0.76rem; line-height: 1.55; }
+            .report-footer { border-top: 1px solid #e2e5ea; padding: 1rem 2rem; display: flex; align-items: flex-end; justify-content: space-between; margin-top: 1rem; }
+            .footer-sig { border-top: 1px solid #374151; width: 160px; margin-bottom: 0.2rem; }
+            .footer-prof { font-weight: 800; font-size: 0.88rem; }
+            .footer-crp { font-size: 0.75rem; color: #6b7280; }
+            .footer-date { font-size: 0.75rem; color: #6b7280; text-align: right; }
+            .footer-conf { font-size: 0.68rem; color: #9ca3af; text-align: right; max-width: 220px; }
+            
+            @media print {
+                body { background: white; }
+                .page { width: 100%; margin: 0; padding: 0; box-shadow: none; border: none; }
+            }
+        </style>
+        `;
+
+        const reportContent = '<div class="page">'
         + '<div class="report-header"><div style="display:flex;align-items:center;gap:1rem;"><div class="logo-box">&#9878;&#65039;</div><div><div class="brand-name">Equilibrium</div><div class="brand-sub">Neuropsicologia</div></div></div><div><div class="report-title">Vineland-3</div><div class="report-subtitle">Escala de Comportamento Adaptativo &#8212; 3&#170; Edi&#231;&#227;o</div></div></div>'
         + '<div class="ident"><div style="grid-column:1/3;"><label>Examinado(a)</label><span>'+nome+'</span></div><div><label>Sexo</label><span>'+sexoLabel+'</span></div><div><label>Data de Nascimento</label><span>'+formatarData(dataNasc)+'</span></div><div><label>Data da Avalia&#231;&#227;o</label><span>'+formatarData(dataTeste)+'</span></div><div><label>Idade na Avalia&#231;&#227;o</label><span>'+idadeStr+'</span></div><div><label>Respondente</label><span>'+respondente+'</span></div><div><label>Avaliador</label><span>'+avaliador+'</span></div><div><label>Formul&#225;rio</label><span>Pais/Cuidadores &#8212; N&#237;vel de Dom&#237;nio</span></div></div>'
         + '<div class="report-body">'
@@ -388,9 +446,11 @@ function gerarRelatorio() {
         + '<div class="section-title">INTERPRETA&#199;&#195;O CL&#205;NICA DO N&#205;VEL ADAPTATIVO</div><div class="section-body"><div class="interp-grid"><div class="interp-box" style="background:#ecfdf5;border-color:#6ee7b7;"><h4 style="color:#065f46;">Alto / Moderadamente Alto (&#8805; 115)</h4><p style="color:#065f46;">O comportamento adaptativo encontra-se acima da m&#233;dia normativa. O indiv&#237;duo demonstra habilidades adaptativas bem desenvolvidas para sua faixa et&#225;ria, com funcionamento independente e competente nas atividades cotidianas.</p></div><div class="interp-box" style="background:#eff6ff;border-color:#93c5fd;"><h4 style="color:#1e40af;">Adequado (86&#8211;114)</h4><p style="color:#1e40af;">O comportamento adaptativo situa-se dentro da faixa esperada para a faixa et&#225;ria. As habilidades adaptativas est&#227;o desenvolvidas de forma compat&#237;vel com as expectativas normativas, sem comprometimentos significativos.</p></div><div class="interp-box" style="background:#fffbeb;border-color:#fcd34d;"><h4 style="color:#92400e;">Moderadamente Baixo (71&#8211;85)</h4><p style="color:#92400e;">O comportamento adaptativo situa-se abaixo da m&#233;dia normativa. Indica limita&#231;&#245;es nas habilidades adaptativas que podem interferir no funcionamento independente. Recomenda-se avalia&#231;&#227;o mais abrangente e suporte nas &#225;reas deficit&#225;rias.</p></div><div class="interp-box" style="background:#fef2f2;border-color:#fca5a5;"><h4 style="color:#991b1b;">Baixo (&#8804; 70)</h4><p style="color:#991b1b;">O comportamento adaptativo situa-se significativamente abaixo da m&#233;dia normativa. Indica comprometimento substancial do funcionamento adaptativo. Esse resultado, combinado com limita&#231;&#245;es intelectuais, pode indicar Defici&#234;ncia Intelectual (DSM-5).</p></div></div></div>'
         + comentariosHTML
         + '<div class="report-footer"><div><div class="footer-sig"></div><div class="footer-prof">'+(avaliador!=='—'?avaliador:'Profissional')+'</div><div class="footer-crp">Neuropsic&#243;logo(a)</div></div><div><div class="footer-date">Documento gerado em '+dataGerado+'</div><div class="footer-conf">Este documento &#233; confidencial e destinado exclusivamente ao profissional solicitante. V&#225;lido apenas com assinatura.</div></div></div>'
-        + '</div></body></html>';
+        + '</div>';
 
-        // 3. Montar e exibir a Janela Modal flutuante
+        const htmlContent = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Vineland-3 — Relatório | ' + nome + '</title>' + reportStyles + '</head><body>' + reportContent + '</body></html>';
+
+        // Montar a Janela Modal flutuante
         const modalOverlay = document.createElement('div');
         modalOverlay.id = 'modal-relatorio-overlay';
         modalOverlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.85); z-index: 99999; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; backdrop-filter: blur(4px);';
@@ -440,5 +500,5 @@ function gerarRelatorio() {
             }
         });
 
-    }, 800); // 800ms de tempo pro spinner rodar e renderizar bonito
+    }, 800); 
 }
