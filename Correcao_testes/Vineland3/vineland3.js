@@ -354,70 +354,11 @@ function gerarRelatorio() {
 
     const comentariosHTML = comentarios.trim() ? '<div style="margin-top:1.5rem;"><div class="section-title">OBSERVAÇÕES DO AVALIADOR</div><div class="section-body" style="font-size:0.88rem;line-height:1.7;color:#374151;white-space:pre-line;">'+comentarios+'</div></div>' : '';
 
-// =========================================================================
-    // INÍCIO DO CÓDIGO DO MODAL (Substitui o window.open antigo)
-    // =========================================================================
+     const dataGerado = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-    // 1. Estilos específicos do relatório e regras para quando for imprimir o Modal
-    const reportStyles = `
-    <style>
-        .page { width: 794px; min-height: 1123px; margin: 0 auto; background: white; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #1a1d23; }
-        .report-header { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%); color: white; padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; }
-        .logo-box { width: 42px; height: 42px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
-        .brand-name { font-size: 1.15rem; font-weight: 800; } .brand-sub { font-size: 0.72rem; color: #c4b5fd; }
-        .report-title { font-size: 1.3rem; font-weight: 800; text-align: right; }
-        .report-subtitle { font-size: 0.72rem; color: #c4b5fd; text-align: right; }
-        .ident { padding: 1.2rem 2rem; background: #f9fafb; border-bottom: 1px solid #e2e5ea; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem 1.5rem; }
-        .ident label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; display: block; margin-bottom: 0.2rem; }
-        .ident span { font-size: 0.85rem; font-weight: 600; }
-        .report-body { padding: 1.5rem 2rem; }
-        .section-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #4c1d95; border-bottom: 2px solid #e2e5ea; padding-bottom: 0.4rem; margin-bottom: 1rem; }
-        .section-body { margin-bottom: 1.5rem; }
-        .results-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .results-table thead tr { background: #4c1d95; color: white; }
-        .results-table thead th { padding: 0.6rem 1rem; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; text-align: left; }
-        .results-table thead th:not(:first-child) { text-align: center; }
-        .results-table tbody tr:nth-child(even) { background: #f9fafb; }
-        .results-table tbody tr:last-child { border-top: 2px solid #7c3aed; }
-        .results-table tbody tr:last-child td { font-weight: 800; color: #4c1d95; }
-        .cca-box { background: #f5f3ff; border: 1px solid #c4b5fd; border-radius: 8px; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; flex-wrap: wrap; gap: 0.5rem; }
-        .cca-values { display: flex; align-items: center; gap: 2rem; }
-        .cca-mini-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #7c3aed; }
-        .cca-mini-val { font-size: 1.6rem; font-weight: 800; color: #4c1d95; line-height: 1; }
-        .grafico-wrap { border: 1px solid #e2e5ea; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; overflow: hidden; }
-        .grafico-wrap svg { width: 100%; height: auto; }
-        .faixas-legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; font-size: 0.72rem; }
-        .faixa-item { display: flex; align-items: center; gap: 0.35rem; }
-        .faixa-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .behavior-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 1rem; }
-        .behavior-box { border: 1px solid #e2e5ea; border-radius: 8px; padding: 0.8rem 1rem; text-align: center; }
-        .behavior-box h4 { font-size: 0.7rem; text-transform: uppercase; color: #6b7280; margin-bottom: 0.3rem; }
-        .soma-val { font-size: 1.6rem; font-weight: 800; color: #4c1d95; line-height: 1.2; }
-        .ve-row { font-size: 0.75rem; color: #6b7280; margin-top: 0.3rem; }
-        .interp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem; }
-        .interp-box { border-radius: 8px; padding: 0.8rem 1rem; border: 1px solid; }
-        .interp-box h4 { font-size: 0.75rem; font-weight: 800; margin-bottom: 0.4rem; }
-        .interp-box p { font-size: 0.76rem; line-height: 1.55; }
-        .report-footer { border-top: 1px solid #e2e5ea; padding: 1rem 2rem; display: flex; align-items: flex-end; justify-content: space-between; margin-top: 1rem; }
-        .footer-sig { border-top: 1px solid #374151; width: 160px; margin-bottom: 0.2rem; }
-        .footer-prof { font-weight: 800; font-size: 0.88rem; }
-        .footer-crp { font-size: 0.75rem; color: #6b7280; }
-        .footer-date { font-size: 0.75rem; color: #6b7280; text-align: right; }
-        .footer-conf { font-size: 0.68rem; color: #9ca3af; text-align: right; max-width: 220px; }
-        
-        /* OVERRIDE MÁGICO PARA IMPRESSÃO: Esconde o site de trás e imprime só o relatório */
-        @media print {
-            body > *:not(#modal-relatorio-overlay) { display: none !important; }
-            #modal-relatorio-overlay { position: static !important; background: transparent !important; padding: 0 !important; overflow: visible !important; }
-            .modal-controls { display: none !important; }
-            .modal-content-wrapper { box-shadow: none !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; border-radius: 0 !important; }
-            .page { width: 100% !important; margin: 0 !important; }
-        }
-    </style>
-    `;
-
-    // 2. O conteúdo HTML do seu Relatório
-    const reportContent = '<div class="page">'
+    const html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Vineland-3 — Relatório | ' + nome + '</title><style>@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");*{margin:0;padding:0;box-sizing:border-box;}body{font-family:"Plus+Jakarta+Sans",system-ui,sans-serif;background:#f8f9fb;color:#1a1d23;-webkit-font-smoothing:antialiased;}.page{width:794px;min-height:1123px;margin:0 auto;background:white;box-shadow:0 4px 24px rgba(0,0,0,0.1);}.report-header{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4c1d95 100%);color:white;padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;}.logo-box{width:42px;height:42px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;}.brand-name{font-size:1.15rem;font-weight:800;}.brand-sub{font-size:0.72rem;color:#c4b5fd;}.report-title{font-size:1.3rem;font-weight:800;text-align:right;}.report-subtitle{font-size:0.72rem;color:#c4b5fd;text-align:right;}.ident{padding:1.2rem 2rem;background:#f9fafb;border-bottom:1px solid #e2e5ea;display:grid;grid-template-columns:repeat(4,1fr);gap:0.8rem 1.5rem;}.ident label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#6b7280;display:block;margin-bottom:0.2rem;}.ident span{font-size:0.85rem;font-weight:600;}.report-body{padding:1.5rem 2rem;}.section-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#4c1d95;border-bottom:2px solid #e2e5ea;padding-bottom:0.4rem;margin-bottom:1rem;}.section-body{margin-bottom:1.5rem;}.results-table{width:100%;border-collapse:collapse;font-size:0.85rem;}.results-table thead tr{background:#4c1d95;color:white;}.results-table thead th{padding:0.6rem 1rem;font-weight:700;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;text-align:left;}.results-table thead th:not(:first-child){text-align:center;}.results-table tbody tr:nth-child(even){background:#f9fafb;}.results-table tbody tr:last-child{border-top:2px solid #7c3aed;}.results-table tbody tr:last-child td{font-weight:800;color:#4c1d95;}.cca-box{background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;margin-top:1rem;flex-wrap:wrap;gap:0.5rem;}.cca-values{display:flex;align-items:center;gap:2rem;}.cca-mini-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;color:#7c3aed;}.cca-mini-val{font-size:1.6rem;font-weight:800;color:#4c1d95;line-height:1;}.grafico-wrap{border:1px solid #e2e5ea;border-radius:8px;padding:1rem;margin-bottom:1.5rem;overflow:hidden;}.grafico-wrap svg{width:100%;height:auto;}.faixas-legend{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:0.75rem;font-size:0.72rem;}.faixa-item{display:flex;align-items:center;gap:0.35rem;}.faixa-dot{width:10px;height:10px;border-radius:50%;}.behavior-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin-bottom:1rem;}.behavior-box{border:1px solid #e2e5ea;border-radius:8px;padding:0.8rem 1rem;text-align:center;}.behavior-box h4{font-size:0.7rem;text-transform:uppercase;color:#6b7280;margin-bottom:0.3rem;}.soma-val{font-size:1.6rem;font-weight:800;color:#4c1d95;line-height:1.2;}.ve-row{font-size:0.75rem;color:#6b7280;margin-top:0.3rem;}.interp-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:1.5rem;}.interp-box{border-radius:8px;padding:0.8rem 1rem;border:1px solid;}.interp-box h4{font-size:0.75rem;font-weight:800;margin-bottom:0.4rem;}.interp-box p{font-size:0.76rem;line-height:1.55;}.report-footer{border-top:1px solid #e2e5ea;padding:1rem 2rem;display:flex;align-items:flex-end;justify-content:space-between;margin-top:1rem;}.footer-sig{border-top:1px solid #374151;width:160px;margin-bottom:0.2rem;}.footer-prof{font-weight:800;font-size:0.88rem;}.footer-crp{font-size:0.75rem;color:#6b7280;}.footer-date{font-size:0.75rem;color:#6b7280;text-align:right;}.footer-conf{font-size:0.68rem;color:#9ca3af;text-align:right;max-width:220px;}@media screen{body{padding:2rem 0;}.print-btn{display:block;margin:0 auto 1.5rem;padding:0.6rem 2rem;background:linear-gradient(135deg,#4c1d95,#7c3aed);color:white;border:none;border-radius:8px;font-family:inherit;font-size:0.9rem;font-weight:700;cursor:pointer;width:794px;}}@media print{body{background:white;}.page{box-shadow:none;width:100%;}.print-btn{display:none!important;}}</style></head><body>'
+    + '<button class="print-btn" onclick="window.print()">&#128438; Imprimir / Salvar como PDF</button>'
+    + '<div class="page">'
     + '<div class="report-header"><div style="display:flex;align-items:center;gap:1rem;"><div class="logo-box">&#9878;&#65039;</div><div><div class="brand-name">Equilibrium</div><div class="brand-sub">Neuropsicologia</div></div></div><div><div class="report-title">Vineland-3</div><div class="report-subtitle">Escala de Comportamento Adaptativo &#8212; 3&#170; Edi&#231;&#227;o</div></div></div>'
     + '<div class="ident"><div style="grid-column:1/3;"><label>Examinado(a)</label><span>'+nome+'</span></div><div><label>Sexo</label><span>'+sexoLabel+'</span></div><div><label>Data de Nascimento</label><span>'+formatarData(dataNasc)+'</span></div><div><label>Data da Avalia&#231;&#227;o</label><span>'+formatarData(dataTeste)+'</span></div><div><label>Idade na Avalia&#231;&#227;o</label><span>'+idadeStr+'</span></div><div><label>Respondente</label><span>'+respondente+'</span></div><div><label>Avaliador</label><span>'+avaliador+'</span></div><div><label>Formul&#225;rio</label><span>Pais/Cuidadores &#8212; N&#237;vel de Dom&#237;nio</span></div></div>'
     + '<div class="report-body">'
@@ -428,45 +369,10 @@ function gerarRelatorio() {
     + '<div class="section-title">INTERPRETA&#199;&#195;O CL&#205;NICA DO N&#205;VEL ADAPTATIVO</div><div class="section-body"><div class="interp-grid"><div class="interp-box" style="background:#ecfdf5;border-color:#6ee7b7;"><h4 style="color:#065f46;">Alto / Moderadamente Alto (&#8805; 115)</h4><p style="color:#065f46;">O comportamento adaptativo encontra-se acima da m&#233;dia normativa. O indiv&#237;duo demonstra habilidades adaptativas bem desenvolvidas para sua faixa et&#225;ria, com funcionamento independente e competente nas atividades cotidianas.</p></div><div class="interp-box" style="background:#eff6ff;border-color:#93c5fd;"><h4 style="color:#1e40af;">Adequado (86&#8211;114)</h4><p style="color:#1e40af;">O comportamento adaptativo situa-se dentro da faixa esperada para a faixa et&#225;ria. As habilidades adaptativas est&#227;o desenvolvidas de forma compat&#237;vel com as expectativas normativas, sem comprometimentos significativos.</p></div><div class="interp-box" style="background:#fffbeb;border-color:#fcd34d;"><h4 style="color:#92400e;">Moderadamente Baixo (71&#8211;85)</h4><p style="color:#92400e;">O comportamento adaptativo situa-se abaixo da m&#233;dia normativa. Indica limita&#231;&#245;es nas habilidades adaptativas que podem interferir no funcionamento independente. Recomenda-se avalia&#231;&#227;o mais abrangente e suporte nas &#225;reas deficit&#225;rias.</p></div><div class="interp-box" style="background:#fef2f2;border-color:#fca5a5;"><h4 style="color:#991b1b;">Baixo (&#8804; 70)</h4><p style="color:#991b1b;">O comportamento adaptativo situa-se significativamente abaixo da m&#233;dia normativa. Indica comprometimento substancial do funcionamento adaptativo. Esse resultado, combinado com limita&#231;&#245;es intelectuais, pode indicar Defici&#234;ncia Intelectual (DSM-5).</p></div></div></div>'
     + comentariosHTML
     + '<div class="report-footer"><div><div class="footer-sig"></div><div class="footer-prof">'+(avaliador!=='—'?avaliador:'Profissional')+'</div><div class="footer-crp">Neuropsic&#243;logo(a)</div></div><div><div class="footer-date">Documento gerado em '+dataGerado+'</div><div class="footer-conf">Este documento &#233; confidencial e destinado exclusivamente ao profissional solicitante. V&#225;lido apenas com assinatura.</div></div></div>'
-    + '</div>';
+    + '</div></body></html>';
 
-    // 3. Montar a Janela Modal Dinamicamente
-    // Remover modal antigo se existir
-    const oldModal = document.getElementById('modal-relatorio-overlay');
-    if (oldModal) oldModal.remove();
-
-    // Criar o fundo escuro do Modal
-    const modalOverlay = document.createElement('div');
-    modalOverlay.id = 'modal-relatorio-overlay';
-    modalOverlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.85); z-index: 99999; display: flex; flex-direction: column; align-items: center; overflow-y: auto; padding: 2rem 1rem; backdrop-filter: blur(4px);';
-
-    // Conteúdo da barra de botões
-    const controlsHtml = `
-        <div class="modal-controls" style="width: 794px; max-width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: white; border-radius: 8px 8px 0 0; border-bottom: 2px solid #e2e5ea;">
-            <div style="font-weight: 800; color: #4c1d95; font-size: 1.1rem;">Pré-visualização do Relatório</div>
-            <div style="display: flex; gap: 0.5rem;">
-                <button onclick="window.print()" style="padding: 0.6rem 1.2rem; background: var(--accent, #7c3aed); color: white; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; transition: background 0.2s;">🖨️ Imprimir / Salvar PDF</button>
-                <button onclick="document.getElementById('modal-relatorio-overlay').remove()" style="padding: 0.6rem 1.2rem; background: #ef4444; color: white; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; transition: background 0.2s;">❌ Fechar</button>
-            </div>
-        </div>
-    `;
-
-    // Envolver tudo
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content-wrapper';
-    modalContent.style.cssText = 'background: white; border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); width: 794px; max-width: 100%; margin-bottom: 3rem; overflow: hidden;';
-    
-    // Injetar o HTML gerado
-    modalContent.innerHTML = reportStyles + controlsHtml + reportContent;
-    modalOverlay.appendChild(modalContent);
-    
-    // Fechar ao clicar fora do relatório (no fundo escuro)
-    modalOverlay.addEventListener('click', function(e) {
-        if(e.target === modalOverlay) {
-            modalOverlay.remove();
-        }
-    });
-
-    // Exibir na tela
-    document.body.appendChild(modalOverlay);
+    const janela = window.open('', '_blank');
+    janela.document.write(html);
+    janela.document.close();
 }
+
