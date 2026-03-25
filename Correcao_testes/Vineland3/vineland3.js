@@ -448,7 +448,7 @@ function gerarRelatorio() {
                     zoom: 0.89; 
                     
                     /* Fallback para navegadores como Firefox */
-                    transform: scale(0.89);
+                    transform: scale(0.90);
                     transform-origin: top center;
                 }
             }
