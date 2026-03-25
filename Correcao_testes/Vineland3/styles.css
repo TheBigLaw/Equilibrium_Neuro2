@@ -469,3 +469,22 @@
     .secao-conteudo { display: block !important; }
     .section-card { border: 1px solid #ccc; page-break-inside: avoid; }
 }
+
+/* =========================================================
+   ÁREA DIREITA (Mantém o cabeçalho e conteúdo no lugar)
+========================================================= */
+.main-content {
+    flex: 1; /* Ocupa todo o espaço restante ao lado da sidebar */
+    height: 100vh;
+    overflow-y: auto; /* Faz a rolagem acontecer apenas aqui dentro */
+    overflow-x: hidden;
+    background: var(--bg);
+}
+
+/* =========================================================
+   FORÇAR INPUTS BRANCOS (Resolve as caixas pretas)
+========================================================= */
+.form-group input, .form-group select {
+    background-color: #ffffff !important;
+    color: #1a1d23 !important;
+}
