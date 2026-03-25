@@ -371,13 +371,12 @@ function gerarRelatorio() {
         const dataGerado = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
         // CSS INJETADO NO IFRAME (COM A REGRA DE FORÇAR CORES DE IMPRESSÃO)
+// CSS INJETADO NO IFRAME (COM A REGRA DE FORÇAR CORES DE IMPRESSÃO E ESCALA 89%)
         const reportStyles = `
         <style>
             @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
             
-            /* =========================================================
-               A MAGIA ACONTECE AQUI: FORÇAR O NAVEGADOR A IMPRIMIR CORES
-            ========================================================= */
+            /* FORÇAR O NAVEGADOR A IMPRIMIR CORES */
             * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -428,9 +427,30 @@ function gerarRelatorio() {
             .footer-date { font-size: 0.75rem; color: #6b7280; text-align: right; }
             .footer-conf { font-size: 0.68rem; color: #9ca3af; text-align: right; max-width: 220px; }
             
+            /* =========================================================
+               MAGIA DA ESCALA DE IMPRESSÃO
+            ========================================================= */
             @media print {
+                @page {
+                    size: A4 portrait; /* Define o tamanho do papel na impressora */
+                    margin: 10mm; /* Força uma margem padrão pequena */
+                }
                 body { background: white; }
-                .page { width: 100%; margin: 0; padding: 0; box-shadow: none; border: none; }
+                
+                .page { 
+                    width: 794px !important; /* Mantém a largura original do design */
+                    margin: 0 auto !important; 
+                    padding: 0 !important; 
+                    box-shadow: none !important; 
+                    border: none !important; 
+                    
+                    /* Escala o conteúdo visualmente para 89% */
+                    zoom: 0.89; 
+                    
+                    /* Fallback para navegadores como Firefox */
+                    transform: scale(0.89);
+                    transform-origin: top center;
+                }
             }
         </style>
         `;
